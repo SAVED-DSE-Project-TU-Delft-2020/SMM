@@ -149,7 +149,7 @@ tau = (shear*Q)/(Ixx*t/1000)/10e5           #[MPa]
 F = bending_moment/y_distribution/2   ## [N] force trough compression panelloa
 
 ## torsion due to sweep
-sweep_half = 18
+sweep_half = 10
 side_span = np.linspace(0, np.tan(radians(sweep_half))*b/2, lcs.num)
 side_span_full = stack_arrays(side_span)
 lift_distr = np.flip(lift.lift_distr[:lift.lift_distr.shape[0]//2])
