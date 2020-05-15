@@ -4,6 +4,7 @@ import loadcases as lcs
 import Lift_distribution as lift
 import numpy as np
 import total_loads as tls
+import handling_loads as hls
 
 import seaborn as sns
 sns.set()
