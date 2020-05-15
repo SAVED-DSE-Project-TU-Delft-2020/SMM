@@ -35,6 +35,7 @@ b_cs = np.hstack([np.flip(b_cs), b_cs])  #[mm]
 b_cs = b_cs[2:-2]
 a = y_distribution*1000         #[mm]
 t = 3*Ixx_req/(b_cs*a**2)       #[mm]
+print(np.max(t))
 Ixx = b_cs*t*a**2/3             #[mm4]
 if np.max(t)>0.5:
     volume = ((np.max(b_cs) + np.min(b_cs))*lcs.b*1000 + (np.max(y_distribution) + np.min(y_distribution))*lcs.b*1000000)*np.max(t) # [mm3]

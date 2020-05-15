@@ -47,10 +47,12 @@ for loc in locs:
     i = i + 1
 
 shear = shear_weight + shear_lift       #[N]
+shear_export = shear
 
 bending_moment = sp_int.cumtrapz(shear, span, initial=0) #[Nm]
 bending_moment = (bending_moment + np.flip(bending_moment)) / 2
 bending_moment = bending_moment - bending_moment[0]
+bending_moment_export = bending_moment
 bending_moment = bending_moment[2:-2]   #[Nm]
 
 span = span[2:-2]   #[m]
