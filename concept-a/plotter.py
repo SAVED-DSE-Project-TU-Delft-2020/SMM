@@ -14,10 +14,12 @@ span = lcs.span
 load = lcs.load_distribution
 bending_moment_maneouv = tls.bending_moment_export
 shear = tls.shear_export
+handling_shear = hls.shear_export
+handling_bending = hls.bending_export
 
 
 xplot = span
-yplot = bending_moment_maneouv
+yplot = handling_shear
 
 tableau20 = [(255, 87, 87), (137, 255, 87), (87, 255, 249), (0, 0, 0),
              (255, 33, 33), (255, 192, 33), (244, 255, 33), (64, 255, 175),
@@ -49,9 +51,9 @@ plt.minorticks_on()
 plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.1)
 plt.rcParams.update({'font.size': 9})
 plt.xlabel('Wingspan location [m]')
-plt.ylabel('Internal bending moment [Nm]')
+plt.ylabel('Internal shear force [N]')
 plt.xlim((-1.5, 1.5))
 plt.plot(xplot, yplot, color=tableau20[0])  #colors : 4
 
-plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Deliverables\\Midtem report\\Plots and figures\\bend_maneouv_vs_span.pdf', dpi = 600)
+plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Deliverables\\Midtem report\\Plots and figures\\shear_handl_vs_span.pdf', dpi = 600)
 plt.show()

@@ -79,7 +79,7 @@ def solve_distributed_2pointbending(load_distribution, span, step,maxcompliance,
 
     sigma_y = sigma_y/2  # [MPa]
     E = E
-
+    bending_moment_export = bending_moment
     bending_moment = bending_moment[2:-2]
     bending_moment = (bending_moment + np.flip(bending_moment)) / 2
     y_distribution = y_distribution[2:-2]
@@ -104,7 +104,7 @@ def solve_distributed_2pointbending(load_distribution, span, step,maxcompliance,
         else:
             iterating = False
 
-    return Ixx_req, bending_moment, shear, vz, dv_dz
+    return Ixx_req, bending_moment, shear, vz, dv_dz, bending_moment_export
 
 
 def stack_arrays(x):

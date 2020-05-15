@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import total_loads as tls
 print('=======================================================')
 print('Start handling loads computations')
-plotting = True
+plotting = False
 n = 2.5
 step = lcs.step  #[m]
 x = lcs.x       #[m]
@@ -26,7 +26,7 @@ span = lcs.span                     #[m]
 mass = np.trapz(load_distribution,span)/9.81  #just make a sanity check
 print('MTOM =',mass/n,'kg')
 
-Ixx_req, bending_moment, shear, vz,dvdz = solve_distributed_2pointbending(load_distribution, span, step, 80, sigma_y, E)
+Ixx_req, bending_moment, shear, vz,dvdz, bending_export = solve_distributed_2pointbending(load_distribution, span, step, 80, sigma_y, E)
 Ixx_req = Ixx_req*10e11    #[mm4]
 b_cs = 0.5*findchord(x)*1000  #[mm]
 b_cs = np.hstack([np.flip(b_cs), b_cs])  #[mm]
@@ -50,6 +50,7 @@ Ixx = b_cs*t*a**2/3             #[mm4]
 max_normal_stress = bending_moment*1000*y_distribution*1000/Ixx
 Ixx = b_cs*t*a**2/3/10e11 #[m4]
 b_cs = b_cs/1000        #[m]
+shear_export = shear
 shear = shear[2:-2]     #[N]
 half_cs_centroid = (b_cs*y_distribution + 2*y_distribution*y_distribution/2)/(b_cs + 2*y_distribution)      #[m]
 Q = (b_cs*y_distribution + 2*y_distribution*y_distribution/2)*t/1000                                        #[m3]`

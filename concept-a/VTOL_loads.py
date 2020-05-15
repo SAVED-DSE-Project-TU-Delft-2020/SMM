@@ -20,7 +20,7 @@ import total_loads as tls
 print('=======================================================')
 print('Start VTOL loads computations')
 
-plotting = True
+plotting = False
 
 
 load_distribution = lcs.load_distribution  *1.56 * 9.81

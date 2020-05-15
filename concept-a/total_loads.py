@@ -22,7 +22,7 @@ x = lcs.x
 
 
 case = 'distributed'  #distributed or discretised
-plot = True
+plot = False
 max_lf = 3.8*1.5
 lift_distr = lift.lift_distr*9.81*max_lf   #[N/m]
 load_distribution = lcs.load_distribution*9.81*max_lf  #[N/m]
