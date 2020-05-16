@@ -14,7 +14,7 @@ class struct_geometry():
         self.taper = self.c_tip/self.c_root
         # print('Taper ratio is: ', self.taper)
         # print('Tip chord is: ', self.c_tip)
-        self.sweep = 40 #deg
+        self.sweep = 10 #deg
 
         self.c = (self.b/2)/(1-self.taper) #height of triangle having root as a base and sides along leading and trailing edges
 

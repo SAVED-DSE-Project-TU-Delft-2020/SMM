@@ -22,9 +22,9 @@ bending_VTOL = VTOL.bending_moment_export
 
 
 xplot = span
-yplot1 = bending_moment_maneouv
-yplot2 = handling_bending
-yplot3 = bending_VTOL
+yplot1 = shear_maneouv
+yplot2 = handling_shear
+yplot3 = shear_VTOL
 
 tableau20 = [(255, 87, 87), (255, 158, 0), (87, 255, 249), (0, 0, 0),
              (255, 33, 33), (255, 192, 33), (244, 255, 33), (64, 255, 175),
@@ -56,12 +56,12 @@ plt.minorticks_on()
 plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.1)
 plt.rcParams.update({'font.size': 9})
 plt.xlabel('Wingspan location [m]')
-plt.ylabel('Internal bending moment [Nm]')
+plt.ylabel('Internal shear force [N]')
 plt.xlim((-1.5, 1.5))
 plt.plot(xplot, yplot1, label = 'Flight loads', color=tableau20[4], marker = '1', markersize = 6, markevery = 10)  #colors : 4
 plt.plot(xplot, yplot2, label = 'Handling and landing loads', color=tableau20[1], marker='.', markersize=6, markevery = 10)
 plt.plot(xplot, yplot3, label = 'VTOL loads', color=tableau20[3], marker='v', markersize=3, markevery = 10)
 #plt.plot(shift_wbf, weights_wbf, label='Load window pass. from back', color=tableau20[2], marker='3', markersize=9)
 plt.legend()
-plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Deliverables\\Midtem report\\Plots and figures\\bending_tot_vs_span.pdf', dpi = 600)
+plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Deliverables\\Midtem report\\Plots and figures\\shear_tot_vs_span.pdf', dpi = 600)
 plt.show()

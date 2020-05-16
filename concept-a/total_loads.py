@@ -64,7 +64,7 @@ if case == 'discretised':
     # shear_lift = shear_lift - np.median(shear_lift)
     shear = shear_weight + shear_lift
 elif case == 'distributed':
-    load_distribution_tot = (lift_distr - load_distribution)  #[N/m]
+    load_distribution_tot = (- lift_distr + load_distribution)  #[N/m]
     shear = sp_int.cumtrapz(load_distribution_tot, span, initial=0)
     shear = shear - np.median(shear)
 
@@ -76,7 +76,8 @@ print('Max abs bending moment: ', np.max(np.abs(bending_moment)), 'Nm')
 
 
 
-y_distribution = np.flip(np.linspace(0.04/2, 0.120/2, computenum(0,lcs.b/2,step))) ## [m]root thickness of 120mm and tip thickness of 40mm
+y_distribution = np.flip(np.linspace(0.04/2, 0.130/2, computenum(0,lcs.b/2,step))) ## [m]root thickness of 120mm and tip thickness of 40mm
+y_distribution_export = y_distribution
 y_distribution = np.hstack([np.flip(y_distribution), y_distribution])   #[m]
 
 
@@ -93,6 +94,11 @@ span = span[2:-2]
 iterating = True
 i = 0
 Ixx_req = abs((bending_moment*y_distribution/(sigma_y*10**6))) # in m4
+a = 2*y_distribution*1000                   #[mm]
+b_cs = 0.5*findchord(x)*1000                #[mm]
+b_cs = np.hstack([np.flip(b_cs), b_cs])     #[mm]
+b_cs = b_cs[2:-2]                           #[mm]
+'''
 while iterating:
     ## measure compliance
 
@@ -106,16 +112,16 @@ while iterating:
     if np.max(np.absolute(vz)) > 50000:  ## specify a value for max allowed compliance
         i = i + 1
         Ixx_req = 1.05*Ixx_req
+        print('i')
     else:
         iterating = False
 
 
 Ixx_req = Ixx_req*10e11                     #[mm4]
-b_cs = 0.5*findchord(x)*1000                #[mm]
-b_cs = np.hstack([np.flip(b_cs), b_cs])     #[mm]
-b_cs = b_cs[2:-2]                           #[mm]
-a = 2*y_distribution*1000                   #[mm]
+
+
 t = 3*Ixx_req/(b_cs*a**2)                   #[mm]
+t_distribution = t
 Ixx = b_cs*t*a**2/3                         #[mm4]
 if np.max(t)>0.5:
     volume = ((np.max(b_cs) + np.min(b_cs))*lcs.b*1000 + (np.max(y_distribution) + np.min(y_distribution))*lcs.b*1000000)*np.max(t) # [mm3]
@@ -147,7 +153,7 @@ tau = (shear*Q)/(Ixx*t/1000)/10e5           #[MPa]
 #### Make calculaitons for isogrid panel
 
 F = bending_moment/y_distribution/2   ## [N] force trough compression panelloa
-
+'''
 ## torsion due to sweep
 sweep_half = 10
 side_span = np.linspace(0, np.tan(radians(sweep_half))*b/2, lcs.num)
@@ -160,7 +166,6 @@ torque = np.flip(sp_int.cumtrapz(np.flip(torque_distr), side_span, initial=0))
 torque_distr = stack_arrays(torque_distr)[2:-2]
 area_distribution = a*b_cs/1000
 tau_distribution = torque_distr/(2*area_distribution*0.0005)/10e5
-
 
 if plot:
     plt.plot(span, tau_distribution)

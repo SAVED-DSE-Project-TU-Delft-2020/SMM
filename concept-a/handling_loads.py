@@ -33,7 +33,7 @@ b_cs = np.hstack([np.flip(b_cs), b_cs])  #[mm]
 # b_cs = np.mean(b_cs)*np.ones(b_cs.shape)
 ## slice b_cs
 b_cs = b_cs[2:-2]
-a = y_distribution*1000         #[mm]
+a = y_distribution*1000*2         #[mm]
 t = 3*Ixx_req/(b_cs*a**2)       #[mm]
 print(np.max(t))
 Ixx = b_cs*t*a**2/3             #[mm4]
