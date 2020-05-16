@@ -1,3 +1,13 @@
+'''
+Author: Marco Desiderio
+
+This program is an old version to perform buckling computations
+
+This program shall not be used
+
+
+'''
+'''
 import numpy as np
 import total_loads as tls
 from functions import *
@@ -12,8 +22,9 @@ print('Start buckling computations')
 Mx = np.max(np.abs(tls.bending_moment_export))  #[Nm]
 
 '''
-For buckling computaitons assume the cross section to be rectangular, with a width of 0.5*c_root and a height of 80% of 
-the airfoil max thickness
+#
+# For buckling computaitons assume the cross section to be rectangular, with a width of 0.5*c_root and a height of 80% of
+# the airfoil max thickness
 '''
 t_start = 0.0005
 sweep = np.deg2rad(sweep)
@@ -82,3 +93,4 @@ while running:
 
 plt.scatter(n_s, masses)
 plt.show()
+'''
