@@ -12,6 +12,7 @@ print('Start buckling computations')
 
 # define constants
 E = E*10e5
+E = 50000*10e5
 v = 0.33
 x = tls.x #[m] half wing span
 step = tls.step
@@ -21,6 +22,7 @@ cx = findchord(x) / 2 #[m]
 yx = tls.y_distribution_export * 2 #[m]
 ax = yx / 2
 t_start = 0.0005            #[m]
+t_spar = 0.001
 ### we have 8 ribs per half-wing
 rib_pitch = 1.5 / 9 #[m]
 ribs_idx = np.linspace(0,x.shape, 10)
@@ -33,12 +35,14 @@ Mx = Mx[Mx.shape[0]//2:] #slice to get only half-span
 
 #
 
-Ixx_start = t_start * cx * (yx**2) / 3
+# Ixx_start = t_start * cx * (yx**2) / 3
 
+Ixx_start = t_start * cx * ax**2 * 2 + t_spar * yx**3 / 12 * 2
 
 sigma_start = Mx * ax / Ixx_start
 # critical stress is at the root, as expected
 Mx_cr = Mx[0]
+Mx_cr = 83
 
 n_stiff = 0
 t = t_start
@@ -63,13 +67,17 @@ while running:
     root_perimeter = 1.596  # [m], perimeter of root airfoil
     skin_perimeters = root_perimeter * chords / c_root
     skin_area = np.trapz(skin_perimeters, dx=step)  # [m2]
-    skin_mass = skin_area * t * 1550
-    tot_mass = skin_mass + 2 * n_stiff * stiff_mass
+    skin_mass = skin_area * t * 1550 * 2
+    stiff_tot_mass = 2 * n_stiff * stiff_mass
+    tot_mass = skin_mass + stiff_tot_mass
     print('=================== ITERATING ===================')
     print('Number of stringers = ', n_stiff)
     print('Skin thickness = ', round(t * 1000,3), 'mm')
+    print('Skin mass = ', round(skin_mass, 3), 'kg')
+    print('Stiff mass = ', round(stiff_tot_mass, 3), 'kg')
     print('Structural mass = ', round(tot_mass,3), 'kg')
-    Ixx = t * np.max(cx) * (np.max(yx) ** 2) / 3 + 2 * n_stiff * A_stiff * ( np.max(ax) )**2
+    NA_loc = (n_stiff * A_stiff * np.max(ax))/(n_stiff * A_stiff + np.max(cx) * t * 2 + np.max(yx) * t * 2)
+    Ixx = t * np.max(cx) * (np.max(ax) - NA_loc)**2 * 2 + t_spar * np.max(yx)**3 / 12 * 2 + 2 * t_spar * np.max(yx) * NA_loc**2 +  n_stiff * A_stiff * ( np.max(ax) - NA_loc )**2
     sigma = abs(Mx_cr * np.max(ax) / Ixx)
     # print(Mx_cr, np.max(ax), Ixx)
     print('Normal stress: ',round(sigma / 10e5,3), 'MPa')
@@ -108,7 +116,7 @@ while running:
         print('t = ', t, '; Number of stiffeners = ', n_stiff)
         running = False
 n_s = np.array(n_s)
-masses = np.array(masses)*2
+masses = np.array(masses)
 
 tableau20 = [(255, 87, 87), (255, 158, 0), (87, 255, 249), (0, 0, 0),
              (255, 33, 33), (255, 192, 33), (244, 255, 33), (64, 255, 175),
@@ -127,7 +135,7 @@ ax.spines["right"].set_visible(False)
 #
 ax.get_xaxis().tick_bottom()
 ax.get_yaxis().tick_left()
-xticks = np.arange(0, 4, 1)
+xticks = np.arange(0, 5, 1)
 #yticks = np.arange(np.min(yplot1), np.max(yplot1) , (np.max(yplot1) - np.min(yplot1)/10))
 plt.xticks(xticks, fontsize=10)
 # plt.yticks(yticks, fontsize=10)
@@ -144,7 +152,7 @@ plt.ylabel('Stiffened skin structural mass [kg]')
 print('Stightest stiffened mass is: ', masses[1], 'kg')
 
 plt.scatter(n_s, masses, label = 'Minimum-skin strucutral mass', marker='o')
-plt.scatter(n_s[1], masses[1], marker = 'o', s =160, label = 'Design point', facecolor = 'none', edgecolors='r')
+plt.scatter(n_s[3], masses[3], marker = 'o', s =160, label = 'Design point', facecolor = 'none', edgecolors='r')
 plt.legend()
 plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Deliverables\\Midtem report\\Plots and figures\\flyingwing_stiffenedmass.pdf', dpi = 600)
 plt.show()
