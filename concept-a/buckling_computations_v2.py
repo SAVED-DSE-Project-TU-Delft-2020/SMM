@@ -155,7 +155,7 @@ plt.rcParams.update({'font.size': 9})
 plt.xlabel('Number of stiffening elements')
 plt.ylabel('Stiffened skin structural mass [kg]')
 print('Stightest stiffened mass is: ', masses[1], 'kg')
-
+a = 
 plt.scatter(n_s, masses, label = 'Minimum-skin strucutral mass', marker='o')
 plt.scatter(n_s[2], masses[2], marker = 'o', s =160, label = 'Design point', facecolor = 'none', edgecolors='r')
 plt.legend()
