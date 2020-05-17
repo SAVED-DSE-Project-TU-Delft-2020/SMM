@@ -1,3 +1,16 @@
+'''
+Author: Marco Desiderio
+
+This program takes bending moment and basic geometric parameters as inputs and iterates to find the most optimal (lightest)
+combination of skin thickness and number of stiffeners.
+
+It outputs max normal stress, critical stress, number of stiffeners for each combination, skin thickness
+mass of structure and generated a plot of mass vs number of stiffeners.
+
+
+'''
+
+
 import total_loads as tls
 import numpy as np
 from functions import *
