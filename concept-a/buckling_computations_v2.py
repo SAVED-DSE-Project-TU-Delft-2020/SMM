@@ -13,7 +13,7 @@ print('Start buckling computations')
 # define constants
 E = E*10e5
 E = 50000*10e5
-v = 0.33
+v = 0.3
 x = tls.x #[m] half wing span
 step = tls.step
 
@@ -71,23 +71,28 @@ while running:
     stiff_tot_mass = 2 * n_stiff * stiff_mass
     tot_mass = skin_mass + stiff_tot_mass
     print('=================== ITERATING ===================')
-    print('Number of stringers = ', n_stiff)
-    print('Skin thickness = ', round(t * 1000,3), 'mm')
-    print('Skin mass = ', round(skin_mass, 3), 'kg')
-    print('Stiff mass = ', round(stiff_tot_mass, 3), 'kg')
-    print('Structural mass = ', round(tot_mass,3), 'kg')
+    print('Number of stringers  =            ', n_stiff)
+    print('Skin thickness       =            ', round(t * 1000,3), 'mm')
+    print('Skin mass            =            ', round(skin_mass, 3), 'kg')
+    print('Stiff mass           =            ', round(stiff_tot_mass, 3), 'kg')
+    print('Structural mass      =            ', round(tot_mass,3), 'kg')
     NA_loc = (n_stiff * A_stiff * np.max(ax))/(n_stiff * A_stiff + np.max(cx) * t * 2 + np.max(yx) * t * 2)
-    Ixx = t * np.max(cx) * (np.max(ax) - NA_loc)**2 * 2 + t_spar * np.max(yx)**3 / 12 * 2 + 2 * t_spar * np.max(yx) * NA_loc**2 +  n_stiff * A_stiff * ( np.max(ax) - NA_loc )**2
+    Ixx1 = t * np.max(cx) * (np.max(ax) - NA_loc)**2 + t * np.max(cx) * (np.max(ax) + NA_loc)**2
+    Ixx2 = t_spar * np.max(yx)**3 / 12 * 2
+    Ixx3 = 2 * t_spar * np.max(yx) * NA_loc**2
+    Ixx4 = n_stiff * A_stiff * ( np.max(ax) - NA_loc )**2
+    # print(Ixx1, Ixx2, Ixx3, Ixx4)
+    Ixx =  Ixx1 + Ixx2 + Ixx3 + Ixx4
     sigma = abs(Mx_cr * np.max(ax) / Ixx)
     # print(Mx_cr, np.max(ax), Ixx)
-    print('Normal stress: ',round(sigma / 10e5,3), 'MPa')
+    print('Normal stress:                   ',round(sigma / 10e5,3), 'MPa')
     b = np.max(cx)/(1 + n_stiff)
     a_b = rib_pitch / b
-    print('a/b = ', round(a_b,3))
+    print('a/b =                            ', round(a_b,3))
     C = Cs(a_b)
     print('Buckling coefficient = ', C)
     sigma_cr = C * (np.pi**2 * E)/(12 * (1 - v**2)) * ( t / b )**2
-    print('Critical stress = ', round(sigma_cr / 10e5,3), 'MPa')
+    print('Critical stress =                ', round(sigma_cr / 10e5,3), 'MPa')
 
     if sigma_cr < sigma:
         t = t + 0.0001
@@ -152,7 +157,7 @@ plt.ylabel('Stiffened skin structural mass [kg]')
 print('Stightest stiffened mass is: ', masses[1], 'kg')
 
 plt.scatter(n_s, masses, label = 'Minimum-skin strucutral mass', marker='o')
-plt.scatter(n_s[3], masses[3], marker = 'o', s =160, label = 'Design point', facecolor = 'none', edgecolors='r')
+plt.scatter(n_s[2], masses[2], marker = 'o', s =160, label = 'Design point', facecolor = 'none', edgecolors='r')
 plt.legend()
 plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Deliverables\\Midtem report\\Plots and figures\\flyingwing_stiffenedmass.pdf', dpi = 600)
 plt.show()
