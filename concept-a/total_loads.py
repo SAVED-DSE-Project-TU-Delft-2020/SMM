@@ -98,7 +98,7 @@ a = 2*y_distribution*1000                   #[mm]
 b_cs = 0.5*findchord(x)*1000                #[mm]
 b_cs = np.hstack([np.flip(b_cs), b_cs])     #[mm]
 b_cs = b_cs[2:-2]                           #[mm]
-'''
+
 while iterating:
     ## measure compliance
 
@@ -126,7 +126,7 @@ Ixx = b_cs*t*a**2/3                         #[mm4]
 if np.max(t)>0.5:
     volume = ((np.max(b_cs) + np.min(b_cs))*lcs.b*1000 + (np.max(y_distribution) + np.min(y_distribution))*lcs.b*1000000)*np.max(t) # [mm3]
 else:
-    t = 0.5
+    t = 0.7
     volume = ((np.max(b_cs) + np.min(b_cs)) * lcs.b * 1000 + (np.max(y_distribution) + np.min(y_distribution)) * lcs.b * 1000000) * t  # [mm3]
 mass = volume*0.0027 # [g]
 print('Mass of the box is :',mass, 'g')
@@ -136,7 +136,7 @@ mass = mass + 2700*0.0005*1000*2*(lcs.S - (np.max(b_cs) + np.min(b_cs)) *lcs.b/2
 print('Mass of the strucutre is :',mass, 'g')
 
 #### Update deflection following new skin thickness
-Ixx = b_cs*t*a**2/3/10e11                                       #[m4]
+Ixx = b_cs*t*a**2/3/10e11                                    #[m4]
 max_normal_stress = bending_moment*y_distribution/Ixx/10e5      #[MPa]
 d2v_dz2 = bending_moment / (E * 10e5) / Ixx
 
@@ -153,7 +153,7 @@ tau = (shear*Q)/(Ixx*t/1000)/10e5           #[MPa]
 #### Make calculaitons for isogrid panel
 
 F = bending_moment/y_distribution/2   ## [N] force trough compression panelloa
-'''
+
 ## torsion due to sweep
 sweep_half = 10
 side_span = np.linspace(0, np.tan(radians(sweep_half))*b/2, lcs.num)
@@ -168,5 +168,5 @@ area_distribution = a*b_cs/1000
 tau_distribution = torque_distr/(2*area_distribution*0.0005)/10e5
 
 if plot:
-    plt.plot(span, tau_distribution)
+    plt.plot(span, vz)
     plt.show()

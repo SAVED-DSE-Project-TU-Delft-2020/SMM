@@ -22,7 +22,7 @@ print('=======================================================')
 print('Start buckling computations')
 
 
-
+plotting = True
 # define constants
 E = E*10e5
 E = 50000*10e5
@@ -55,7 +55,7 @@ Ixx_start = t_start * cx * ax**2 * 2 + t_spar * yx**3 / 12 * 2
 sigma_start = Mx * ax / Ixx_start
 # critical stress is at the root, as expected
 Mx_cr = Mx[0]
-Mx_cr = 83
+print('Root bending moment is:           ', Mx_cr)
 
 n_stiff = 0
 t = t_start
@@ -73,7 +73,7 @@ index = 0
 coefficients = np.array([8, 8, 6, 5, 4, 4])
 a_bs = np.array([0, 0.45, 0.5, 0.6, 1, 10])
 Cs = scipy.interpolate.interp1d(a_bs, coefficients)
-
+Ixxs = []
 
 while running:
     chords = cx * 2
@@ -96,6 +96,7 @@ while running:
     Ixx4 = n_stiff * A_stiff * ( np.max(ax) - NA_loc )**2
     # print(Ixx1, Ixx2, Ixx3, Ixx4)
     Ixx =  Ixx1 + Ixx2 + Ixx3 + Ixx4
+    Ixxs.append(Ixx)
     sigma = abs(Mx_cr * np.max(ax) / Ixx)
     # print(Mx_cr, np.max(ax), Ixx)
     print('Normal stress:                   ',round(sigma / 10e5,3), 'MPa')
@@ -135,41 +136,41 @@ while running:
         running = False
 n_s = np.array(n_s)
 masses = np.array(masses)
+if plotting:
+    tableau20 = [(255, 87, 87), (255, 158, 0), (87, 255, 249), (0, 0, 0),
+                 (255, 33, 33), (255, 192, 33), (244, 255, 33), (64, 255, 175),
+                 (225, 107, 255), (197, 176, 213), (140, 86, 75), (196, 156, 148),
+                 (227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),
+                 (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)]
 
-tableau20 = [(255, 87, 87), (255, 158, 0), (87, 255, 249), (0, 0, 0),
-             (255, 33, 33), (255, 192, 33), (244, 255, 33), (64, 255, 175),
-             (225, 107, 255), (197, 176, 213), (140, 86, 75), (196, 156, 148),
-             (227, 119, 194), (247, 182, 210), (127, 127, 127), (199, 199, 199),
-             (188, 189, 34), (219, 219, 141), (23, 190, 207), (158, 218, 229)]
+    for i in range(len(tableau20)):
+        r, g, b = tableau20[i]
+        tableau20[i] = (r / 255., g / 255., b / 255.)
+    ax = plt.subplot(111)
+    ax.spines["top"].set_visible(False)
+    # ax.spines["bottom"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    # ax.spines["left"].set_visible(False)
+    #
+    ax.get_xaxis().tick_bottom()
+    ax.get_yaxis().tick_left()
+    xticks = np.arange(0, 5, 1)
+    #yticks = np.arange(np.min(yplot1), np.max(yplot1) , (np.max(yplot1) - np.min(yplot1)/10))
+    plt.xticks(xticks, fontsize=10)
+    # plt.yticks(yticks, fontsize=10)
+    plt.yticks(fontsize=10)
+    ##Show the major grid lines with dark grey lines
+    plt.grid(b=True, which='major', color='#666666', linestyle='-', alpha=0.5)
 
-for i in range(len(tableau20)):
-    r, g, b = tableau20[i]
-    tableau20[i] = (r / 255., g / 255., b / 255.)
-ax = plt.subplot(111)
-ax.spines["top"].set_visible(False)
-# ax.spines["bottom"].set_visible(False)
-ax.spines["right"].set_visible(False)
-# ax.spines["left"].set_visible(False)
-#
-ax.get_xaxis().tick_bottom()
-ax.get_yaxis().tick_left()
-xticks = np.arange(0, 5, 1)
-#yticks = np.arange(np.min(yplot1), np.max(yplot1) , (np.max(yplot1) - np.min(yplot1)/10))
-plt.xticks(xticks, fontsize=10)
-# plt.yticks(yticks, fontsize=10)
-plt.yticks(fontsize=10)
-##Show the major grid lines with dark grey lines
-plt.grid(b=True, which='major', color='#666666', linestyle='-', alpha=0.5)
-
-##Show the minor grid lines with very faint and almost transparent grey lines
-plt.minorticks_on()
-plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.1)
-plt.rcParams.update({'font.size': 9})
-plt.xlabel('Number of stiffening elements')
-plt.ylabel('Stiffened skin structural mass [kg]')
-print('Stightest stiffened mass is: ', masses[1], 'kg')
-plt.scatter(n_s, masses, label = 'Minimum-skin strucutral mass', marker='o')
-plt.scatter(n_s[2], masses[2], marker = 'o', s =160, label = 'Design point', facecolor = 'none', edgecolors='r')
-plt.legend()
-plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Deliverables\\Midtem report\\Plots and figures\\flyingwing_stiffenedmass.pdf', dpi = 600)
-plt.show()
+    ##Show the minor grid lines with very faint and almost transparent grey lines
+    plt.minorticks_on()
+    plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.1)
+    plt.rcParams.update({'font.size': 9})
+    plt.xlabel('Number of stiffening elements')
+    plt.ylabel('Stiffened skin structural mass [kg]')
+    print('Stightest stiffened mass is: ', masses[1], 'kg')
+    plt.scatter(n_s, masses, label = 'Minimum-skin strucutral mass', marker='o')
+    plt.scatter(n_s[2], masses[2], marker = 'o', s =160, label = 'Design point', facecolor = 'none', edgecolors='r')
+    plt.legend()
+    plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Deliverables\\Midtem report\\Plots and figures\\flyingwing_stiffenedmass.pdf', dpi = 600)
+    plt.show()

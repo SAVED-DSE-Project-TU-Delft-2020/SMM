@@ -27,7 +27,7 @@ class struct_geometry():
 
         ##wing properties
 
-        self.MTOM = 16.217
+        self.MTOM = 18.4
         self.MPAY = 3
         self.MBAT = 3.923
         self.OEM = self.MTOM - self.MPAY - self.MBAT
