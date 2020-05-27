@@ -7,7 +7,11 @@ import matplotlib.pyplot as plt
 import xlrd
 import xlwt
 from openpyxl import load_workbook
+import parameters as par
 
+print('=========== INITIALIZING CROSS SECTION COMPUTATIONS ===========')
+print('Coordinate system origin is at the leading edge of the airfoil')
+print('X-axis is pointing towards the TE and Z-axis is pointing up')
 ### load points from excel
 wb = load_workbook(filename = r'NACA35120_Points.xlsx')
 sheet = wb.worksheets[0]
@@ -25,7 +29,7 @@ for i in range(2, row_count + 1):
     airfoil_points_z.append(point_z_loc)
 ### create array of points to compute airfoil shape
 airfoil_points = np.array([airfoil_points_x, airfoil_points_z])
-airfoil_points = airfoil_points.T
+airfoil_points = airfoil_points.T * par.c_r
 ### compute center point of each skin segment
 airfoil_midpoints_x = (airfoil_points[:,0] + np.roll(airfoil_points[:,0],-1))/2
 airfoil_midpoints_z = (airfoil_points[:,1] + np.roll(airfoil_points[:,1],-1))/2
@@ -33,6 +37,28 @@ airfoil_midpoints = np.vstack([airfoil_midpoints_x, airfoil_midpoints_z]).T
 ### compute skin segments length
 rolled_points_x = np.roll(airfoil_points[:,0], -1)
 rolled_points_z = np.roll(airfoil_points[:,1], -1)
-print(rolled_points_x[0], airfoil_points[0,0], rolled_points_z[0], airfoil_points[0,1])
 mesh_length = np.sqrt((rolled_points_x - airfoil_points[:,0])**2 + (rolled_points_z - airfoil_points[:,1])**2)
-print(mesh_length)
+
+###### VALIDATE CODE ######
+# mesh_length = np.array([0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4])                                        #for validation
+# airfoil_midpoints_z = np.array([0.25, 0.25, 0.25, 0.25, -0.25, -0.25, -0.25, -0.25])                                    #for validation
+# airfoil_midpoints_x = np.array([0.5 * 1/8, 0.5 * 3/8, 0.5 * 5/8, 0.5*7/8, 0.5 * 1/8, 0.5 * 3/8, 0.5 * 5/8, 0.5 * 7/8])  #for validation
+### validated x_bar, z_bar, Ixx, Izz and Izx match analytical solution of two flat thin plates (t = 0.0005mm) 500mm apart and 500mm long
+
+mesh_area = mesh_length * par.t_sk
+x_bar = np.sum(mesh_area * airfoil_midpoints_x)/np.sum(mesh_area)
+z_bar = np.sum(mesh_area * airfoil_midpoints_z)/np.sum(mesh_area)
+print('')
+print('x_bar = ', round(x_bar,5), '         m')
+print('z_bar = ', round(z_bar,5), '         m')
+### Compute second moments of area
+Ixx = np.sum(mesh_area * (airfoil_midpoints_z - z_bar)**2)
+Izz = np.sum(mesh_area * (airfoil_midpoints_x - x_bar)**2)
+Izx = np.sum(mesh_area * (airfoil_midpoints_x*airfoil_midpoints_z))
+print('Ixx   = ', "{:3e}".format(Ixx), '    m4')
+print('Izz   = ', "{:3e}".format(Izz), '    m4')
+print('Izx   = ', "{:3e}".format(Izx), '    m4')
+
+ 
+
+
