@@ -55,6 +55,7 @@ Ixx_start = t_start * cx * ax**2 * 2 + t_spar * yx**3 / 12 * 2
 sigma_start = Mx * ax / Ixx_start
 # critical stress is at the root, as expected
 Mx_cr = Mx[0]
+Mx_cr = 83.0
 print('Root bending moment is:           ', Mx_cr)
 
 n_stiff = 0
@@ -168,8 +169,8 @@ if plotting:
     plt.rcParams.update({'font.size': 9})
     plt.xlabel('Number of stiffening elements')
     plt.ylabel('Stiffened skin structural mass [kg]')
-    print('Stightest stiffened mass is: ', masses[1], 'kg')
-    plt.scatter(n_s, masses, label = 'Minimum-skin strucutral mass', marker='o')
+    print('Lightest stiffened mass is: ', masses[1], 'kg')
+    plt.scatter(n_s, masses, label = 'Minimum-skin structural mass', marker='o')
     plt.scatter(n_s[2], masses[2], marker = 'o', s =160, label = 'Design point', facecolor = 'none', edgecolors='r')
     plt.legend()
     plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Deliverables\\Midtem report\\Plots and figures\\flyingwing_stiffenedmass.pdf', dpi = 600)
