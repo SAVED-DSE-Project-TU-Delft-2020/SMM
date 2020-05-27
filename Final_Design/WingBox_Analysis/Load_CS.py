@@ -1,7 +1,7 @@
-'''
+"""
 Author: Marco Desiderio
 This file loads airfoil points from excel and computes centroid location, second moment of area and shear center location.
-'''
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 import xlrd
@@ -9,12 +9,18 @@ import xlwt
 from openpyxl import load_workbook
 import parameters as par
 
+debug = True
+
 print('=========== INITIALIZING CROSS SECTION COMPUTATIONS ===========')
+if debug:
+    print('*************** DEBUG MODE IS ON ***************')
 print('Coordinate system origin is at the leading edge of the airfoil')
 print('X-axis is pointing towards the TE and Z-axis is pointing up')
+# print('loading workbook...')
 ### load points from excel
 wb = load_workbook(filename = r'NACA35120_Points.xlsx')
 sheet = wb.worksheets[0]
+# print('creating mesh...')
 #print(sheet['A2'].value) # D18
 row_count = sheet.max_row                   #count number of rows
 airfoil_points_x = []
@@ -27,9 +33,31 @@ for i in range(2, row_count + 1):
     point_z_loc = sheet[z_col + row_number].value
     airfoil_points_x.append(point_x_loc)
     airfoil_points_z.append(point_z_loc)
+
+
 ### create array of points to compute airfoil shape
 airfoil_points = np.array([airfoil_points_x, airfoil_points_z])
 airfoil_points = airfoil_points.T * par.c_r
+### airfoil chord from data points is not exactly 1 unit, but slightly more, so we have to fix the scaling
+scaling = par.c_r / (np.max(airfoil_points[:,0]) - np.min(airfoil_points[:,0]))
+airfoil_points = airfoil_points * scaling
+### points for v&v
+if debug:
+    airfoil_points_x1 = np.zeros(150) -0.2
+    airfoil_points_x2 = np.linspace(-0.2,1, 150)
+    airfoil_points_x3 = np.ones(150)
+    airfoil_points_x4 = np.flip(airfoil_points_x2)
+
+    airfoil_points_z1 = np.linspace(-0.5, 0.5, 150)
+    airfoil_points_z2 = 0.5 * np.ones(150)
+    airfoil_points_z3 = np.flip(airfoil_points_z1)
+    airfoil_points_z4 = -airfoil_points_z2
+
+    airfoil_points_x = np.hstack([airfoil_points_x1, airfoil_points_x2, airfoil_points_x3, airfoil_points_x4])
+    airfoil_points_z = np.hstack([airfoil_points_z1, airfoil_points_z2, airfoil_points_z3, airfoil_points_z4])
+    airfoil_points = np.array([airfoil_points_x, airfoil_points_z]).T
+    print(airfoil_points.shape)
+##########
 ### compute center point of each skin segment
 airfoil_midpoints_x = (airfoil_points[:,0] + np.roll(airfoil_points[:,0],-1))/2
 airfoil_midpoints_z = (airfoil_points[:,1] + np.roll(airfoil_points[:,1],-1))/2
@@ -38,6 +66,8 @@ airfoil_midpoints = np.vstack([airfoil_midpoints_x, airfoil_midpoints_z]).T
 rolled_points_x = np.roll(airfoil_points[:,0], -1)
 rolled_points_z = np.roll(airfoil_points[:,1], -1)
 mesh_length = np.sqrt((rolled_points_x - airfoil_points[:,0])**2 + (rolled_points_z - airfoil_points[:,1])**2)
+skin_per = np.sum(mesh_length)  ## [m] used to validate what has been done so far, as the perimeter of the skin was computed on CATiA
+
 
 ###### VALIDATE CODE ######
 # mesh_length = np.array([0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4])                                        #for validation
@@ -46,6 +76,7 @@ mesh_length = np.sqrt((rolled_points_x - airfoil_points[:,0])**2 + (rolled_point
 ### validated x_bar, z_bar, Ixx, Izz and Izx match analytical solution of two flat thin plates (t = 0.0005mm) 500mm apart and 500mm long
 
 mesh_area = mesh_length * par.t_sk
+# print('computing cross-section properties...')
 x_bar = np.sum(mesh_area * airfoil_midpoints_x)/np.sum(mesh_area)
 z_bar = np.sum(mesh_area * airfoil_midpoints_z)/np.sum(mesh_area)
 print('')
@@ -59,6 +90,6 @@ print('Ixx   = ', "{:3e}".format(Ixx), '    m4')
 print('Izz   = ', "{:3e}".format(Izz), '    m4')
 print('Izx   = ', "{:3e}".format(Izx), '    m4')
 
- 
+
 
 
