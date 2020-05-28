@@ -23,7 +23,7 @@ print('=========== INITIALIZING CROSS SECTION COMPUTATIONS ===========')
 
 
 
-def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs):
+def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, plotshow, plotsavefig):
     if debug:
         print('*************** DEBUG MODE IS ON ***************')
     ### create array of points to compute airfoil shape
@@ -96,14 +96,24 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs):
 
     x_sc, z_sc = f.get_shear_center(airfoil_points, airfoil_midpoints, Ixx, Izz, Izx, x_bar, z_bar, skin_per, mesh_length)
     if plotcs:
+        plt.clf()
+        plt.figure(figsize=(10, 10))
+        ax = plt.gca()
+        # sets the ratio to 5
+        ax.set_aspect(0.45)
         plt.plot(airfoil_points_x, airfoil_points_z, label = 'Cross section', color = 'r')
         # plt.plot(np.linspace(0,c_loc, 150), np.zeros(150))
         plt.scatter([x_sc], [z_sc], label = 'Shear center', color = 'g')
         plt.scatter([x_bar], [z_bar], label = 'Centroid', color = 'b', marker = '*')
-        plt.legend(loc = 'upper right')
-        plt.show()
+        plt.legend(loc = 'upper right', prop={'size': 6})
+        if plotsavefig:
+            plt.savefig(
+                'C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Detailed Design\\Plots\\CS_Plots\\cross_section_' + str(round(c_loc,4)) + 'c.pdf',dpi=600)
+        if plotshow:
+            plt.show()
 
-    return x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc
+
+    return x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc, airfoil_points_x, airfoil_points_z
 
 
 

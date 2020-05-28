@@ -36,6 +36,19 @@ def find_q0(qb, line_coordinates, skin_perimeter):
     return q0
 
 def get_shear_center(airfoil_points, airfoil_midpoints, Ixx, Izz, Izx, x_bar, z_bar, skin_per, mesh_length):
+    """
+
+    :param airfoil_points: array of points defining the geometry of the airfoil
+    :param airfoil_midpoints: array of points between the airfoil_points
+    :param Ixx: SMOAxx
+    :param Izz: SMOAzz
+    :param Izx: Product moment of area
+    :param x_bar: x-centroid of the cs
+    :param z_bar: z-centroid of the cs
+    :param skin_per: perimeter of the cross section
+    :param mesh_length: length of the mesh
+    :return: x and z location of the shear center
+    """
 
     print('... computing shear center locations ...')
     airfoil_points_x = airfoil_points[:,0]
