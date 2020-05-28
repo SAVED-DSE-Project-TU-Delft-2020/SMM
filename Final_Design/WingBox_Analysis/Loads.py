@@ -39,7 +39,7 @@ dL_dy_new = sp_interpolate.interp1d(y_locs, dL_dy)
 y_mesh = np.linspace(0, par.b/2, par.N * par.segment_mesh)
 
 L_y = sp_integrate.cumtrapz(dL_dy_new(y_mesh), y_mesh, initial=0)
-M_y = sp_integrate.cumtrapz(L_y, y_mesh, initial=0)
+Mx_y = - sp_integrate.cumtrapz(L_y, y_mesh, initial=0)
 
 indexes = np.linspace(par.segment_mesh,par.segment_mesh * par.N, par.N)
 indexes = np.ndarray.tolist(indexes)
@@ -49,7 +49,20 @@ Mx_array = np.array([])
 for i in indexes:
     i = int(i)
     Sz_array = np.append(Sz_array, L_y[i-1])
-    Mx_array = np.append(Mx_array, M_y[i-1])
+    Mx_array = np.append(Mx_array, Mx_y[i-1])
+
+
+## change this later once we get the data
+D_y = L_y / 20
+Mz_y = - sp_integrate.cumtrapz(D_y, y_mesh, initial=0)
+Sx_array = np.array([])
+Mz_array = np.array([])
+for i in indexes:
+    i = int(i)
+    Sx_array = np.append(Sx_array, D_y[i-1])
+    Mz_array = np.append(Mz_array, Mz_y[i-1])
+## change this later once we get the data
+
 
 
 # plt.plot(y_mesh, M_y)

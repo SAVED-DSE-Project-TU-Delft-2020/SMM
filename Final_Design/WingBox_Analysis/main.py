@@ -20,6 +20,8 @@ import matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap, BoundaryNorm
+import seaborn as sns
+sns.set()
 
 debug = False
 plotcs = False
@@ -93,12 +95,13 @@ airfoil_points_x_arr = airfoil_points_x_arr[1:,:]
 airfoil_points_z_arr = airfoil_points_z_arr[1:,:]
 Mx = Loads.Mx_array
 # print(Mx.shape, airfoil_points_x_arr)
-Mz = np.zeros(Mx.shape[0])
 
+Mz = Loads.Mz_array
+# Mx = np.zeros(Mz.shape[0])
 sigma_y_arr = np.zeros(airfoil_points_x_arr.shape[1])
 for i in range(par.N):
     i = int(i)
-    sigma_y = f.get_bending_stresses(Mx[i], Mz[i], Ixx_arr[i], Izz_arr[i], Izx_arr[i], airfoil_points_x_arr[i,:], airfoil_points_z_arr[i,:])
+    sigma_y = f.get_bending_stresses(Mx[i], Mz[i], Ixx_arr[i], Izz_arr[i], Izx_arr[i], airfoil_points_x_arr[i,:], airfoil_points_z_arr[i,:], x_bar_arr[i], z_bar_arr[i])
     # print(sigma_y.shape)
     sigma_y_arr = np.vstack((sigma_y_arr, sigma_y))
 sigma_y_arr = sigma_y_arr[1:,:]
@@ -116,7 +119,8 @@ y_locs_arr = y_locs_arr[1:,:]
 ## PLOT ROOT CHORD STRESSES###
 
 sigma_y_root = sigma_y_arr[-1,:]/10e5
-print(sigma_y_root.max(), sigma_y_root.min(), Mx[-1])
+print(sigma_y_root.max(), sigma_y_root.min(), Mx[0])
+print(z_bar_arr[0])
 airfoil_points_x_arr_root = airfoil_points_x_arr[-1,:]
 airfoil_points_z_arr_root = airfoil_points_z_arr[-1,:]
 
@@ -139,11 +143,13 @@ y = airfoil_points_z_arr_root
 points = np.array([x, y]).T.reshape(-1, 1, 2)
 segments = np.concatenate([points[:-1], points[1:]], axis=1)
 
-fig, axs = plt.subplots(1, 1, sharex=True, sharey=True)
-
+fig, axs = plt.subplots(1, 1)
+ax = plt.gca()
+# sets the ratio to 5
+ax.set_aspect(1)
 # Create a continuous norm to map from data points to colors
 norm = plt.Normalize(sigma_y_root.min(), sigma_y_root.max())
-lc = LineCollection(segments, cmap='viridis', norm=norm)
+lc = LineCollection(segments, cmap='RdYlBu', norm=norm)
 # Set the values used for colormapping
 lc.set_array(sigma_y_root)
 lc.set_linewidth(2)
@@ -151,10 +157,11 @@ line = axs.add_collection(lc)
 fig.colorbar(line, ax=axs, label = '$\sigma_{y}$ [$MPa$]')
 plt.xlabel('x [$m$]')
 plt.ylabel('z [$m$]')
+plt.minorticks_on()
+plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
 
-
-axs.set_xlim(x.min() - 0.1, x.max() + 0.1)
-axs.set_ylim(y.min() - 0.1, y.max() + 0.1)
+axs.set_xlim(x.min() - 0.05, x.max() + 0.05)
+axs.set_ylim(y.min() - 0.05, y.max() + 0.05)
 plt.show()
 
 
