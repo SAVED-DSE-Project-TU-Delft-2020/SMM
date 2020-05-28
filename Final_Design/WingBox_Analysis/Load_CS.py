@@ -38,7 +38,7 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     airfoil_points_z = airfoil_points[:,1]
     ### points for v&v
     if debug:
-        mesh = 150    #set to 150
+        mesh = 100    #set to 150
         ## increase number of nodes to check that section properties converge to a single value when number of nodes is indeed increased
         ### define dummy wing box 1.2 meters wide, 1m tall, 0.5mm in thickness
         airfoil_points_x1 = np.zeros(mesh) -0.2
@@ -106,6 +106,7 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
                 'C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Detailed Design\\Plots\\CS_Plots\\cross_section_' + str(round(c_loc,4)) + 'c.pdf',dpi=600)
         if plotshow:
             plt.show()
+    print('=========== CROSS SECTION COMPUTATIONS COMPLETED ===========')
 
 
     return x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc, airfoil_points_x, airfoil_points_z

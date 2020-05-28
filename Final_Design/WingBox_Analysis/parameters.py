@@ -27,3 +27,4 @@ print('MTOM is:         ', MTOM,    '    kg')
 
 ### Discretise each half-wing into N segments
 N = 100
+segment_mesh = 100

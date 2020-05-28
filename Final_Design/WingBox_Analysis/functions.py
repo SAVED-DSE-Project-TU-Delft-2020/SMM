@@ -154,3 +154,23 @@ def get_shear_center(airfoil_points, airfoil_midpoints, Ixx, Izz, Izx, x_bar, z_
     # plt.plot(line_coordinates[:-1], qs)
     # plt.show()
     return x_sc, z_sc
+
+def get_bending_stresses(Mx, Mz, Ixx, Izz, Izx, x, z):
+    """
+    This script takes Cross section properties and bending moments as inputs and returns a normal stress distribution
+    This function was validated by comparison with analytical value
+    :param Mx: Bending moment x
+    :param Mz: Bending moment z
+    :param Ixx: SMOAxx
+    :param Izz: SMOAzz
+    :param Izx: Product moment of area
+    :param x: x locations
+    :param z: z locations
+    :return:
+    """
+    part_1 = (Mz * Ixx - Mx * Izx) * x
+    part_2 = (Mx * Izz - Mz * Izx) * z
+    part_3 = (Ixx * Izz - Izx**2)
+    sigma_y = (part_1 + part_2) / part_3
+
+    return sigma_y

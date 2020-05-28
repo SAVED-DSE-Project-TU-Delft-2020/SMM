@@ -54,7 +54,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="PyScientificConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.Loads">
+  <component name="RunManager" selected="Python.main">
     <configuration name="3D_Geometry" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="WingBox_Analysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -121,7 +121,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="compute_shear_cetner" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="WingBox_Analysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -134,7 +134,29 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/compute_shear_cetner.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="random_notes" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="WingBox_Analysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/random_notes.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -145,10 +167,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.Loads" />
+        <item itemvalue="Python.random_notes" />
         <item itemvalue="Python.3D_Geometry" />
         <item itemvalue="Python.Load_CS" />
-        <item itemvalue="Python.compute_shear_cetner" />
       </list>
     </recent_temporary>
   </component>
@@ -166,7 +189,8 @@
       <workItem from="1590658833791" duration="3197000" />
       <workItem from="1590662091001" duration="847000" />
       <workItem from="1590662979067" duration="8153000" />
-      <workItem from="1590676026360" duration="304000" />
+      <workItem from="1590676026360" duration="8237000" />
+      <workItem from="1590684557406" duration="4469000" />
     </task>
     <servers />
   </component>
@@ -186,50 +210,54 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="2506" y="203" key="#Inspections" timestamp="1590687495165">
+      <screen x="1920" y="0" width="1920" height="1050" />
+    </state>
+    <state x="2506" y="203" key="#Inspections/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590687495165" />
     <state x="2660" y="280" key="FileChooserDialogImpl" timestamp="1590672649900">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state x="2660" y="280" key="FileChooserDialogImpl/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590672649900" />
-    <state width="1877" height="183" key="GridCell.Tab.0.bottom" timestamp="1590676108396">
+    <state width="1877" height="142" key="GridCell.Tab.0.bottom" timestamp="1590689745175">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state width="1493" height="213" key="GridCell.Tab.0.bottom/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590622531316" />
-    <state width="1877" height="183" key="GridCell.Tab.0.bottom/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590676108396" />
-    <state width="1877" height="183" key="GridCell.Tab.0.center" timestamp="1590676108396">
+    <state width="1877" height="142" key="GridCell.Tab.0.bottom/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590689745175" />
+    <state width="1877" height="142" key="GridCell.Tab.0.center" timestamp="1590689745175">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state width="1493" height="213" key="GridCell.Tab.0.center/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590622531316" />
-    <state width="1877" height="183" key="GridCell.Tab.0.center/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590676108396" />
-    <state width="1877" height="183" key="GridCell.Tab.0.left" timestamp="1590676108396">
+    <state width="1877" height="142" key="GridCell.Tab.0.center/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590689745175" />
+    <state width="1877" height="142" key="GridCell.Tab.0.left" timestamp="1590689745175">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state width="1493" height="213" key="GridCell.Tab.0.left/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590622531316" />
-    <state width="1877" height="183" key="GridCell.Tab.0.left/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590676108396" />
-    <state width="1877" height="183" key="GridCell.Tab.0.right" timestamp="1590676108396">
+    <state width="1877" height="142" key="GridCell.Tab.0.left/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590689745175" />
+    <state width="1877" height="142" key="GridCell.Tab.0.right" timestamp="1590689745175">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state width="1493" height="213" key="GridCell.Tab.0.right/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590622531316" />
-    <state width="1877" height="183" key="GridCell.Tab.0.right/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590676108396" />
-    <state width="1493" height="265" key="GridCell.Tab.1.bottom" timestamp="1590658795507">
+    <state width="1877" height="142" key="GridCell.Tab.0.right/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590689745175" />
+    <state width="1877" height="351" key="GridCell.Tab.1.bottom" timestamp="1590687548493">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state width="1493" height="265" key="GridCell.Tab.1.bottom/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590620830306" />
-    <state width="1493" height="265" key="GridCell.Tab.1.bottom/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590658795507" />
-    <state width="1493" height="265" key="GridCell.Tab.1.center" timestamp="1590658795506">
+    <state width="1877" height="351" key="GridCell.Tab.1.bottom/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590687548493" />
+    <state width="1877" height="351" key="GridCell.Tab.1.center" timestamp="1590687548493">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state width="1493" height="265" key="GridCell.Tab.1.center/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590620830306" />
-    <state width="1493" height="265" key="GridCell.Tab.1.center/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590658795506" />
-    <state width="1493" height="265" key="GridCell.Tab.1.left" timestamp="1590658795506">
+    <state width="1877" height="351" key="GridCell.Tab.1.center/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590687548493" />
+    <state width="1877" height="351" key="GridCell.Tab.1.left" timestamp="1590687548493">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state width="1493" height="265" key="GridCell.Tab.1.left/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590620830305" />
-    <state width="1493" height="265" key="GridCell.Tab.1.left/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590658795506" />
-    <state width="1493" height="265" key="GridCell.Tab.1.right" timestamp="1590658795507">
+    <state width="1877" height="351" key="GridCell.Tab.1.left/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590687548493" />
+    <state width="1877" height="351" key="GridCell.Tab.1.right" timestamp="1590687548493">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state width="1493" height="265" key="GridCell.Tab.1.right/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590620830306" />
-    <state width="1493" height="265" key="GridCell.Tab.1.right/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590658795507" />
+    <state width="1877" height="351" key="GridCell.Tab.1.right/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590687548493" />
     <state x="2266" y="78" key="SettingsEditor" timestamp="1590669766619">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
@@ -244,7 +272,9 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/WingBox_Analysis$Load_CS.coverage" NAME="Load_CS Coverage Results" MODIFIED="1590671182324" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WingBox_Analysis$3D_Geometry.coverage" NAME="3D_Geometry Coverage Results" MODIFIED="1590675272143" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/WingBox_Analysis$Loads.coverage" NAME="Loads Coverage Results" MODIFIED="1590676108385" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WingBox_Analysis$random_notes.coverage" NAME="random_notes Coverage Results" MODIFIED="1590683360114" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WingBox_Analysis$Loads.coverage" NAME="Loads Coverage Results" MODIFIED="1590684096412" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WingBox_Analysis$main.coverage" NAME="main Coverage Results" MODIFIED="1590689758724" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WingBox_Analysis$compute_shear_cetner.coverage" NAME="compute_shear_cetner Coverage Results" MODIFIED="1590652379030" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

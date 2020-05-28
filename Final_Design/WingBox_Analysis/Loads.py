@@ -26,15 +26,31 @@ for i in range(2, row_count + 1):
     point_dL_dy_loc = sheet[lift_col + row_number].value
     y_locs.append(point_y_locs)
     dL_dy.append(point_dL_dy_loc)
-
+###### MODIFY THIS WHEN WE GET NEW DATA ######
 y_locs = np.array([y_locs])[0][:35]
 dL_dy = np.array([dL_dy])[0][:35]
 
-y_locs = sp_interpolate.
+y_locs = np.hstack([[0], y_locs])
+dL_dy = np.hstack([[dL_dy[0]], dL_dy])
+#################################################
+
+dL_dy_new = sp_interpolate.interp1d(y_locs, dL_dy)
+
+y_mesh = np.linspace(0, par.b/2, par.N * par.segment_mesh)
+
+L_y = sp_integrate.cumtrapz(dL_dy_new(y_mesh), y_mesh, initial=0)
+M_y = sp_integrate.cumtrapz(L_y, y_mesh, initial=0)
+
+indexes = np.linspace(par.segment_mesh,par.segment_mesh * par.N, par.N)
+indexes = np.ndarray.tolist(indexes)
+
+Sz_array = np.array([])
+Mx_array = np.array([])
+for i in indexes:
+    i = int(i)
+    Sz_array = np.append(Sz_array, L_y[i-1])
+    Mx_array = np.append(Mx_array, M_y[i-1])
 
 
-L = sp_integrate.trapz(dL_dy, y_locs) * 2
-print('Lift = ', L, 'N')
-
-plt.plot(y_locs[:35], dL_dy[:35])
-plt.show()
+# plt.plot(y_mesh, M_y)
+# plt.show()
