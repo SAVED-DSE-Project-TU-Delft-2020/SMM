@@ -3,6 +3,11 @@ Author: Marco Desiderio
 This file loads airfoil points from excel and computes centroid location, second moment of area and shear center location.
 
 Limitations: this program is guaranteed to work with single-cell beams only. Multicell features still need to be implemented
+V&V: This code was validates by giving as inputs points from a standard rectangular cross section
+the shear center computations present minimal discrepancies which are related to discretisation error. When the number of nodes is increased
+the shear center locations converg to the real value, which proves that indeed the inaccuracies are due to discretisation.
+A second validation procedure consisted into giving the code the coordinates of a NACA0012 airfoil. The shear center z-location was correcly computed to be in the
+symmetry axis
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -83,23 +88,23 @@ skin_per = np.sum(mesh_length)  ## [m] used to validate what has been done so fa
 
 mesh_area = mesh_length * par.t_sk
 # print('computing cross-section properties...')
-x_bar = np.sum(mesh_area * airfoil_midpoints_x)/np.sum(mesh_area)
-z_bar = np.sum(mesh_area * airfoil_midpoints_z)/np.sum(mesh_area)
+x_bar = np.sum(mesh_area * airfoil_midpoints_x) / np.sum(mesh_area)
+z_bar = np.sum(mesh_area * airfoil_midpoints_z) / np.sum(mesh_area)
 print('')
 print('x_bar = ', round(x_bar,5), '         m')
 print('z_bar = ', round(z_bar,5), '         m')
 ### Compute second moments of area
 Ixx = np.sum(mesh_area * (airfoil_midpoints_z - z_bar)**2)
 Izz = np.sum(mesh_area * (airfoil_midpoints_x - x_bar)**2)
-Izx = np.sum(mesh_area * (airfoil_midpoints_x*airfoil_midpoints_z))
+Izx = np.sum(mesh_area * (airfoil_midpoints_x * airfoil_midpoints_z))
 print('Ixx   = ', "{:3e}".format(Ixx), '    m4')
 print('Izz   = ', "{:3e}".format(Izz), '    m4')
 print('Izx   = ', "{:3e}".format(Izx), '    m4')
 
 x_sc, z_sc = f.get_shear_center(airfoil_points, airfoil_midpoints, Ixx, Izz, Izx, x_bar, z_bar, skin_per, mesh_length)
 
-plt.scatter(airfoil_points_x, airfoil_points_z)
-plt.scatter([x_sc], [z_col])
+plt.plot(airfoil_points_x, airfoil_points_z)
+plt.scatter([x_sc], [z_sc])
 plt.show()
 
 
