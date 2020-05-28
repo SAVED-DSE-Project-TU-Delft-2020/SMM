@@ -3,7 +3,7 @@ Author: Marco Desiderio
 Parameters file for the wing box analysis
 """
 import numpy as np
-print('=========== LOADING SAVED PARAMETERS ===========')
+print('=========== LOADING DRONE PARAMETERS ===========')
 ### Cross-seciton parameters
 t_sk = 0.0005           #[m]
 t_sp = 0.0010           #[m]
@@ -24,3 +24,6 @@ print('Wing surface is: ', S, '     m2')
 print('Root chord is:   ', c_r, '    m')
 print('Tip chord is:    ', round(c_t,4), '  m')
 print('MTOM is:         ', MTOM,    '    kg')
+
+### Discretise each half-wing into N segments
+N = 100

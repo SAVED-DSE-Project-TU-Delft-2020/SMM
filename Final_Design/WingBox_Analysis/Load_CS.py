@@ -17,13 +17,8 @@ from openpyxl import load_workbook
 import parameters as par
 import functions as f
 
-
-
-print('=========== INITIALIZING CROSS SECTION COMPUTATIONS ===========')
-
-
-
 def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, plotshow, plotsavefig):
+    print('=========== INITIALIZING CROSS SECTION COMPUTATIONS ===========')
     if debug:
         print('*************** DEBUG MODE IS ON ***************')
     ### create array of points to compute airfoil shape

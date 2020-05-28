@@ -48,7 +48,7 @@ c_1 = par.c_r
 x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc, airfoil_points_x_loc, airfoil_points_z_loc = CS.compute_CS_props(c_1, airfoil_points_x, airfoil_points_z, debug, plotcs, plotshow, plotsavefig)
 
 ### create chords list
-c_locs = np.linspace(par.c_r, par.c_t, 5)
+c_locs = np.linspace(par.c_t, par.c_r, 300)
 c_locs_list = np.ndarray.tolist(c_locs)
 ### initialise arrays
 x_bar_arr = np.zeros(1)
@@ -95,5 +95,7 @@ airfoil_points_z_arr = airfoil_points_z_arr[1:,:]
 
 
 ###time program execution
+print('=========== STRUCTURAL ANALYSIS COMPUTATIONS COMPLETED ===========')
 stop = timeit.default_timer()
 print('Runtime: ', round(stop - start,4)*1000, 'ms')
+print('==================================================================')
