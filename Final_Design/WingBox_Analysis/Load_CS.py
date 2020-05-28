@@ -1,6 +1,8 @@
 """
 Author: Marco Desiderio
 This file loads airfoil points from excel and computes centroid location, second moment of area and shear center location.
+
+Limitations: this program is guaranteed to work with single-cell beams only. Multicell features still need to be implemented
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,8 +10,9 @@ import xlrd
 import xlwt
 from openpyxl import load_workbook
 import parameters as par
+import functions as f
 
-debug = True
+debug = False
 
 print('=========== INITIALIZING CROSS SECTION COMPUTATIONS ===========')
 if debug:
@@ -43,13 +46,16 @@ scaling = par.c_r / (np.max(airfoil_points[:,0]) - np.min(airfoil_points[:,0]))
 airfoil_points = airfoil_points * scaling
 ### points for v&v
 if debug:
-    airfoil_points_x1 = np.zeros(150) -0.2
-    airfoil_points_x2 = np.linspace(-0.2,1, 150)
-    airfoil_points_x3 = np.ones(150)
+    mesh = 150    #set to 150
+    ## increase number of nodes to check that section properties converge to a single value when number of nodes is indeed increased
+    ### define dummy wing box 1.2 meters wide, 1m tall, 0.5mm in thickness
+    airfoil_points_x1 = np.zeros(mesh) -0.2
+    airfoil_points_x2 = np.linspace(-0.2,1, mesh)
+    airfoil_points_x3 = np.ones(mesh)
     airfoil_points_x4 = np.flip(airfoil_points_x2)
 
-    airfoil_points_z1 = np.linspace(-0.5, 0.5, 150)
-    airfoil_points_z2 = 0.5 * np.ones(150)
+    airfoil_points_z1 = np.linspace(-0.5, 0.5, mesh)
+    airfoil_points_z2 = 0.5 * np.ones(mesh)
     airfoil_points_z3 = np.flip(airfoil_points_z1)
     airfoil_points_z4 = -airfoil_points_z2
 
@@ -89,6 +95,12 @@ Izx = np.sum(mesh_area * (airfoil_midpoints_x*airfoil_midpoints_z))
 print('Ixx   = ', "{:3e}".format(Ixx), '    m4')
 print('Izz   = ', "{:3e}".format(Izz), '    m4')
 print('Izx   = ', "{:3e}".format(Izx), '    m4')
+
+x_sc, z_sc = f.get_shear_center(airfoil_points, airfoil_midpoints, Ixx, Izz, Izx, x_bar, z_bar, skin_per, mesh_length)
+
+plt.scatter(airfoil_points_x, airfoil_points_z)
+plt.scatter([x_sc], [z_col])
+plt.show()
 
 
 
