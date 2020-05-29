@@ -66,6 +66,9 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     mesh_length = np.sqrt((rolled_points_x - airfoil_points[:,0])**2 + (rolled_points_z - airfoil_points[:,1])**2)
     skin_per = np.sum(mesh_length)  ## [m] used to validate what has been done so far, as the perimeter of the skin was computed on CATiA
 
+    A_enclosed = abs(np.trapz(airfoil_points_x, airfoil_points_z))
+
+
 
     ###### VALIDATE CODE ######
     # mesh_length = np.array([0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4, 0.5/4])                                        #for validation
@@ -81,6 +84,7 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     print('c_loc = ', round(c_loc,5), '         m')
     print('x_bar = ', round(x_bar,5), '         m')
     print('z_bar = ', round(z_bar,5), '         m')
+    print('A_enclosed = ', "{:3e}".format(A_enclosed), 'm2')
     ### Compute second moments of area
     Ixx = np.sum(mesh_area * (airfoil_midpoints_z - z_bar)**2)
     Izz = np.sum(mesh_area * (airfoil_midpoints_x - x_bar)**2)
@@ -109,7 +113,7 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     print('=========== CROSS SECTION COMPUTATIONS COMPLETED ===========')
 
 
-    return x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc, airfoil_points_x, airfoil_points_z
+    return x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc, A_enclosed, airfoil_points_x, airfoil_points_z, mesh_length
 
 
 

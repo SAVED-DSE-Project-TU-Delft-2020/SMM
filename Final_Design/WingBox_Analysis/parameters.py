@@ -20,6 +20,7 @@ h = (b/2) / (1 - taper) #height of triangle having root chord as a base and side
 ### System paramters
 MTOM = 17.80            #[kg]
 L_D = 20
+LF = 4 * 0.25
 
 print('Wingspan is:     ', b, '       m')
 print('Wing surface is: ', S, '     m2')
@@ -27,6 +28,7 @@ print('Root chord is:   ', c_r, '    m')
 print('Tip chord is:    ', round(c_t,4), '  m')
 print('MTOM is:         ', MTOM,    '    kg')
 print('L/D is:          ', L_D)
+print('LF is :          ', LF)
 ### Discretise each half-wing into N segments
 N = 100
 segment_mesh = 100

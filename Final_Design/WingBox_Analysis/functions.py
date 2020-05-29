@@ -69,7 +69,6 @@ Function was validated by computing the shear flows of
 
 def find_q0(qb, line_coordinates, skin_perimeter):
     """
-
     :param qb: Open section shear flow (array)
     :param line_coordinates: Coordinates of the line along you are gonna integrate (array)
     :param skin_perimeter: Length of perimeter along which you are performing the integration
@@ -80,7 +79,6 @@ def find_q0(qb, line_coordinates, skin_perimeter):
 
 def get_shear_center(airfoil_points, airfoil_midpoints, Ixx, Izz, Izx, x_bar, z_bar, skin_per, mesh_length):
     """
-
     :param airfoil_points: array of points defining the geometry of the airfoil
     :param airfoil_midpoints: array of points between the airfoil_points
     :param Ixx: SMOAxx

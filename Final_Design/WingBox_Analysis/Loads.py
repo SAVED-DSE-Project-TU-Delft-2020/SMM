@@ -60,10 +60,10 @@ center_load = M_CENTER / 2 / (par.c_r * par.PAY_WIDTH / 2) * np.ones(slicing) * 
 w_mass_tot = np.hstack([center_load, wing_load])
 mass = np.trapz(w_mass_tot, y) * 2 / 9.81
 w_mass_tot = w_mass_tot * par.MTOM / mass
-
 w_final = dL_dy_new(y) - w_mass_tot
 
-############### TORSIONAL LOADS #############
+
+
 
 
 
