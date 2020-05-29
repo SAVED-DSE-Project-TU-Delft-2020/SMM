@@ -4,6 +4,49 @@ import functions as f
 import parameters as par
 import matplotlib.pyplot as plt
 
+
+def findchord(c_root, y, h):
+    '''
+    :param y: spanwise location
+    :return: cord length at location y
+    h is the length of the triangle having its base at c_root and both sides on the sides of the trapezoid
+    '''
+    c_i = c_root*(1-y/h)
+
+    return c_i
+
+def computenum(start, stop, step):
+    '''
+    Computes the number of elements of which a segment is divided into given a delta-x
+    :param start: start of the segment
+    :param stop: stop of the segment
+    :param step: delta-x required
+    :return: number of elements to use in np.linspace
+    '''
+
+    num = int((stop - start)/step)+1
+    return num
+
+def findarea(y1, y2, c_r, h):
+    '''
+    :param y1: spanwise location of chord 1
+    :param y2: spanwise location of chord 2
+    :return: wing surface between chord 1 and chord 2
+    '''
+    c1 = findchord(c_r, y1, h)
+    c2 = findchord(c_r, y2, h)
+    A = trapezarea(c1, c2, abs(y1-y2))
+    return A
+
+def trapezarea(c1, c2, h):
+    '''
+    :param c1: long basis
+    :param c2: short basis
+    :param h: height
+    :return: area of trapezoid
+    '''
+    return (c1 + c2)*h/2
+
 def find_qb(Sx, Sz, Ixx, Izz, Izx, line_coordinates, t, x, z):
     """
     This function will compute the open section shear flow given loads

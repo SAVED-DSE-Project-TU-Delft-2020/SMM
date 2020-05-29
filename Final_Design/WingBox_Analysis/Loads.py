@@ -10,9 +10,14 @@ import matplotlib.pyplot as plt
 import scipy.integrate as sp_integrate
 import scipy.interpolate as sp_interpolate
 import parameters as par
+import functions as f
+import seaborn as sns
+sns.set()
+
+debug = False
 
 print('=========== GENERATING LOAD CASES ===========')
-
+####################### GET LIFT DISTRIBUTION FROM DATA ############################
 wb = load_workbook(filename = r'testdata.xlsx')
 sheet = wb.worksheets[0]
 row_count = sheet.max_row                   #count number of rows
@@ -32,38 +37,44 @@ dL_dy = np.array([dL_dy])[0][:35]
 
 y_locs = np.hstack([[0], y_locs])
 dL_dy = np.hstack([[dL_dy[0]], dL_dy])
-#################################################
+dL_dy_new = sp_interpolate.interp1d(y_locs, dL_dy)      ### INTERPOLATE SO WE CAN GET THE DATA WHERE WE WANT
 
-dL_dy_new = sp_interpolate.interp1d(y_locs, dL_dy)
+################## COMPUTE DOWNWARDS LOADS DUE TO STRCTURAL WEIGHT #################################
 
-y_mesh = np.linspace(0, par.b/2, par.N * par.segment_mesh)
+start = 0
+stop = par.b/2
+step = 0.001
+num = f.computenum(start, stop, step)
+y = np.linspace(start, stop, num)
+Ax = par.c_r - y * par.c_r / par.h
 
-L_y = sp_integrate.cumtrapz(dL_dy_new(y_mesh), y_mesh, initial=0)
-Mx_y = - sp_integrate.cumtrapz(L_y, y_mesh, initial=0)
+M_CENTER = par.M_AI + par.M_BAT + par.M_PAY + par.M_PARACH + par.M_FINS
 
-indexes = np.linspace(par.segment_mesh,par.segment_mesh * par.N, par.N)
-indexes = np.ndarray.tolist(indexes)
+M_wing = par.MTOM - M_CENTER
+M_wing_2 = M_wing / 2
 
-Sz_array = np.array([])
-Mx_array = np.array([])
-for i in indexes:
-    i = int(i)
-    Sz_array = np.append(Sz_array, L_y[i-1])
-    Mx_array = np.append(Mx_array, Mx_y[i-1])
+wing_load = Ax * M_wing_2 / f.findarea(par.PAY_WIDTH/2, par.b/2, par.c_r, par.h) * 9.81
+slicing = int(0.5 * par.PAY_WIDTH/step)
+wing_load = wing_load[slicing:]
+center_load = M_CENTER / 2 / (par.c_r * par.PAY_WIDTH / 2) * np.ones(slicing) * 9.81
+w_mass_tot = np.hstack([center_load, wing_load])
+mass = np.trapz(w_mass_tot, y) * 2 / 9.81
+w_mass_tot = w_mass_tot * par.MTOM / mass
 
+w_final = dL_dy_new(y) - w_mass_tot
 
-## change this later once we get the data
-D_y = L_y / 20
-Mz_y = - sp_integrate.cumtrapz(D_y, y_mesh, initial=0)
-Sx_array = np.array([])
-Mz_array = np.array([])
-for i in indexes:
-    i = int(i)
-    Sx_array = np.append(Sx_array, D_y[i-1])
-    Mz_array = np.append(Mz_array, Mz_y[i-1])
-## change this later once we get the data
+############### TORSIONAL LOADS #############
 
 
 
-# plt.plot(y_mesh, M_y)
-# plt.show()
+if debug:
+    plt.xlabel('y [$m$]')
+    plt.ylabel('w [$N/m$]')
+    plt.title('Spanwise load distribution (half-wing)')
+    plt.minorticks_on()
+    plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.1)
+    plt.plot(y, w_mass_tot, label = 'Weight distribution')
+    plt.plot(y, dL_dy_new(y), label = 'Lift distribution')
+    plt.plot(y, w_final, label = 'Total distribution')
+    plt.legend(loc = 'upper right')
+    plt.show()

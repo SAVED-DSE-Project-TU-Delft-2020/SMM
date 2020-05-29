@@ -21,6 +21,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ListedColormap, BoundaryNorm
 import seaborn as sns
+import Interal_Loads
 sns.set()
 
 debug = False
@@ -93,10 +94,10 @@ x_sc_arr = x_sc_arr[1:]
 z_sc_arr = z_sc_arr[1:]
 airfoil_points_x_arr = airfoil_points_x_arr[1:,:]
 airfoil_points_z_arr = airfoil_points_z_arr[1:,:]
-Mx = Loads.Mx_array
+Mx = Interal_Loads.Mx_array
 # print(Mx.shape, airfoil_points_x_arr)
 
-Mz = Loads.Mz_array
+Mz = Interal_Loads.Mz_array
 # Mx = np.zeros(Mz.shape[0])
 sigma_y_arr = np.zeros(airfoil_points_x_arr.shape[1])
 for i in range(par.N):
@@ -108,7 +109,7 @@ sigma_y_arr = sigma_y_arr[1:,:]
 # print(sigma_y_arr)
 
 y_locs_arr = np.zeros(airfoil_points_x_arr.shape[1])
-y_locs_pos = np.linspace(par.b/2, 0, par.N)
+y_locs_pos = np.linspace(par.b/2, par.PAY_WIDTH/2, par.N)
 
 for i in range(par.N):
     i = int(i)
@@ -117,12 +118,13 @@ for i in range(par.N):
 y_locs_arr = y_locs_arr[1:,:]
 
 ## PLOT ROOT CHORD STRESSES###
-
-sigma_y_root = sigma_y_arr[-1,:]/10e5
+location = -1
+sigma_y_root = sigma_y_arr[location,:]/10e5
 print(sigma_y_root.max(), sigma_y_root.min(), Mx[0])
 print(z_bar_arr[0])
-airfoil_points_x_arr_root = airfoil_points_x_arr[-1,:]
-airfoil_points_z_arr_root = airfoil_points_z_arr[-1,:]
+airfoil_points_x_arr_root = airfoil_points_x_arr[location,:]
+airfoil_points_z_arr_root = airfoil_points_z_arr[location,:]
+y_loc = y_locs_arr[location,0]
 
 
 print('=========== STRUCTURAL ANALYSIS COMPUTATIONS COMPLETED ===========')
@@ -154,9 +156,10 @@ lc = LineCollection(segments, cmap='RdYlBu', norm=norm)
 lc.set_array(sigma_y_root)
 lc.set_linewidth(2)
 line = axs.add_collection(lc)
-fig.colorbar(line, ax=axs, label = '$\sigma_{y}$ [$MPa$]')
+fig.colorbar(line, ax=axs, label = '$\sigma_{yy}$ [$MPa$]')
 plt.xlabel('x [$m$]')
 plt.ylabel('z [$m$]')
+plt.title('$\sigma_{yy}$ distribution along the airfoil, y = ' + str(y_loc) + 'm')
 plt.minorticks_on()
 plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
 
