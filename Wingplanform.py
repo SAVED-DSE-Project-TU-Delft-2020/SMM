@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 
 ''' MODEL ASSUMPTIONS '''
 
+    # Aircraft symmetrical along longitudinal (x) - axis
+
     # Forward spar location at 10% of the Chord
     
     # Aft spar location at 60% of the chord
@@ -23,10 +25,12 @@ import matplotlib.pyplot as plt
 
     # x_AC SEAD Torenbeek --> 25 & MAC complete wing lecture 4 BA = 6
     
+    # Payload placed on CG location
+    
     
 
 
-#Input values
+#Constraints Input values
 
 wing_loading   = 122                #[N/m] from P&P stall
 span           = 3                  #[m]
@@ -49,6 +53,12 @@ m_without_wing_group    = m_battery+m_avpase
 m_wing_group   = 2* m_engine_inner + 2 * m_engine_outer + m_wing_struc
 
 m_total = m_wing_group + m_without_wing_group + m_payload
+
+# Subsystem dimensions
+
+width_payload  = 0.268
+length_payload = 0.295 
+height_payload = 0.118
 
 # Surface Area
 
@@ -182,6 +192,7 @@ Data = Planform(area,span,g,s)
 
 # Define points
 
+# Planform
 point_1 = (-Data.span/2, np.tan(Data.sweep_LE)* Data.span/2 + Data.c_tip)
 point_2 = (-Data.span/2, np.tan(Data.sweep_LE)* Data.span/2)
 point_3 = (0,0)
@@ -189,35 +200,45 @@ point_4 = (Data.span/2,np.tan(Data.sweep_LE)* Data.span/2 )
 point_5 = (Data.span/2,np.tan(Data.sweep_LE)* Data.span/2 + Data.c_tip)
 point_6 = (0,Data.c_root)
 
+#25%chordline
 point_7 = (-Data.span/2,np.tan(Data.sweep)* Data.span/2 + Data.c_root * 0.25)
 point_8 = (0,Data.c_root * 0.25)
 point_9 = (Data.span/2,np.tan(Data.sweep)* Data.span/2 + Data.c_root * 0.25)
 
+#MAC
 point_10 = (Data.y_MAC,np.tan(Data.sweep_LE)*Data.y_MAC)
 point_11 = (Data.y_MAC,np.tan(Data.sweep_LE)*Data.y_MAC + Data.c_MAC) 
 
 point_12 = (-Data.y_MAC,np.tan(Data.sweep_LE)*Data.y_MAC)
 point_13 = (-Data.y_MAC,np.tan(Data.sweep_LE)*Data.y_MAC + Data.c_MAC) 
 
+#Payload
+point_14 = (-width_payload/2, Data.x_CG + length_payload/2)
+point_15 = (width_payload/2, Data.x_CG + length_payload/2)
+point_16 = (-width_payload/2, Data.x_CG - length_payload/2)
+point_17 = (width_payload/2, Data.x_CG - length_payload/2)
 
 # Plot points
 
-wingplanform = plt.figure()
-ax = wingplanform.add_subplot()
-points_outline = [point_1, point_2, point_3, point_4, point_5, point_6]
+wingplanform        = plt.figure()
+ax                  = wingplanform.add_subplot()
+points_outline      = [point_1, point_2, point_3, point_4, point_5, point_6]
 points_quarterchord = [point_7,point_8,point_9]
-points_MAC_r = [point_10,point_11]
-points_MAC_l = [point_12,point_13]
+points_MAC_r        = [point_10,point_11]
+points_MAC_l        = [point_12,point_13]
+points_payload      = [point_14,point_15,point_17,point_16]
 
-line_outline = plt.Polygon(points_outline, closed=True, fill=None, edgecolor='r')
-line_quarterchord = plt.Polygon(points_quarterchord, closed=None, fill=None, edgecolor='r')
-line_MAC_r = plt.Polygon(points_MAC_r, closed=None, fill=None, edgecolor='r')
-line_MAC_l = plt.Polygon(points_MAC_l, closed=None, fill=None, edgecolor='r')
+line_outline        = plt.Polygon(points_outline, closed=True, fill=None, edgecolor='r')
+line_quarterchord   = plt.Polygon(points_quarterchord, closed=None, fill=None, edgecolor='r')
+line_MAC_r          = plt.Polygon(points_MAC_r, closed=None, fill=None, edgecolor='b')
+line_MAC_l          = plt.Polygon(points_MAC_l, closed=None, fill=None, edgecolor='b')
+line_payload        = plt.Polygon(points_payload, closed=True, fill=None, edgecolor='r')
 
 wingplanform.gca().add_line(line_MAC_r)
 wingplanform.gca().add_line(line_MAC_l)
 wingplanform.gca().add_line(line_outline)
 wingplanform.gca().add_line(line_quarterchord)
+wingplanform.gca().add_line(line_payload)
 
 ax.plot(0,Data.x_CG, 'ro')
 ax.plot(0,Data.x_NP, 'bo')
