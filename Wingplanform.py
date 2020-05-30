@@ -7,33 +7,53 @@ Created on Thu May 28 11:38:34 2020
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
+#import pandas as pd
 
 ''' MODEL ASSUMPTIONS '''
 
-    # Forward spar location at 25% of the Chord
+    # Forward spar location at 10% of the Chord
     
-    # Aft spar location at 75% of the chord
+    # Aft spar location at 60% of the chord
+    
+    # Wing structural longitudinal CG lies at 70% of distance between main and aft spar at 35 % of the semiwingspan
     
     # Engine longitudinal CG locations at LE intersection
     
     # Engines are placed symmetrically (laterally) at (b/2) 0.35 and (b/2)*0.7
 
-    # 
+    # x_AC SEAD Torenbeek --> 25 & MAC complete wing lecture 4 BA = 6
+    
+    
 
 
 #Input values
 
-m_engine_inner = 1                  #[kg]
-m_engine_outer = 1                  #[kg]
-m_wing_struc   = 8.7                #[kg]
-area           = 1.3                #[m^2]
+wing_loading   = 122                #[N/m] from P&P stall
 span           = 3                  #[m]
-sweep          = 0 * np.pi / 180    #[rad]
-x_CG_without_wing_group  = 0.15     #[m]
-m_without_wing_group     = 7.46
+
+#CG groups
+
+m_engine_inner = 0.4                #[kg]
+m_engine_outer = 0.4                #[kg]
+m_wing_struc   = 8.5                #[kg]
+m_avpase       = 0.836 - 0.5        #[kg] Avionics, Parachute and Sensors
+m_battery      = 3.6                #[kg] Battery mass
+m_payload      = 3                  #[kg] Payload mass
+
+x_CG_battery   = 0.15               #[m]
+x_CG_avpase    = 0.35               #[m]
+
+x_CG_without_wing_group = (x_CG_battery * m_battery + x_CG_avpase * m_avpase) / (m_battery+m_avpase)
+m_without_wing_group    = m_battery+m_avpase
 
 m_wing_group   = 2* m_engine_inner + 2 * m_engine_outer + m_wing_struc
+
+m_total = m_wing_group + m_without_wing_group + m_payload
+
+# Surface Area
+
+area = m_total *9.80665 / wing_loading
+
 
 class Planform:
     
@@ -88,11 +108,12 @@ class Planform:
         if self.taper > 0.375:
            x_NP = ( 0.25 * self.c_root) + ( 2 * self.span ) / ( 3 * np.pi) * np.tan(self.sweep)
         if self.taper < 0.375:
-           x_NP =  0.25 * self.c_root + ( self.span * ( 1 + 2 * self.taper )) / (6 * ( 1 + self.taper )) * np.tan(self.sweep)
+           x_NP =  0.25 * self.c_root + ( self.span * ( 1 + 2 * self.taper )) / (6 * ( 1 + self.taper )) * np.tan(self.sweep) 
         return x_NP
     
     def calc_x_CG_Wing_struc(self):
-        x_CG_wing_struc = 0.25 * self.c_root + np.tan(self.sweep) * (0.35 * self.span / 2)
+        c_35 = 2 * self.area / ((1+self.taper) * self.span) * (1 - (1 - self.taper) / self.span * (2 * 0.35 * self.span / 2))
+        x_CG_wing_struc =  np.tan(self.sweep_LE) * (0.35 * self.span / 2) + (0.10 + 0.5 * 0.7) * c_35
         return x_CG_wing_struc
     
     def calc_x_CG_engines_outer(self):
@@ -110,40 +131,53 @@ class Planform:
         return x_CG_wing_group
         
     def calc_x_CG(self):
-        x_CG = (x_CG_without_wing_group * m_without_wing_group + self.x_CG_wing_group * m_wing_group) / (m_without_wing_group + m_wing_group)
+        x_CG = (x_CG_without_wing_group * m_without_wing_group + self.x_CG_wing_group * m_wing_group) / (m_without_wing_group + m_wing_group + m_payload) 
         return x_CG
     
     def calc_SM(self):
-        SM = ( self.x_NP - self.x_CG ) 
+        SM = ( self.x_NP - self.x_CG ) / self.c_MAC
         return SM
     
     
-taperlist = np.arange(0.1,1,0.05)
-sweeplist = np.arange(0,40,5)   
-        
-
-for j in taperlist:
-    
-    Data_0 = Planform(area,span,j,0)
-    Data_5 = Planform(area,span,j,5)
-    Data_10 = Planform(area,span,j,10)
-    Data_15 = Planform(area,span,j,15)
-    Data_20 = Planform(area,span,j,20)
-    Data_25 = Planform(area,span,j,25)
+taperlist = np.arange(0.1,1,0.01)
+sweeplist = np.arange(0,25,0.1)   
 
 
-#    plt.plot(j,Data_0.x_NP,'bx')
-#    plt.plot(j,Data_0.x_CG,'ro')
-#    plt.plot(j,Data_0.SM,'ko')
+
+graphSM = plt.figure()
+ax = graphSM.add_subplot()
+
+#ax.xlabel('Taper Ratio [C_t/C_r]')
+#ax.ylabel('Sweep q(1/4) [deg]')
+ax.grid(True)
+ax.set_title('Sweep vs Taper for SM = 20 (red), 17.5 (blue), and 15 (black)')
+
+options = []
+
+for m in taperlist:
+    for n in sweeplist:
+        Data = Planform(area,span,m,n)
+        if Data.SM > 0.200 and Data.SM < 0.201:
+            ax.plot(m,n,'ro', markersize=1)
+            options.append([round(n,3),round(m,3)])
+            #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
+        if Data.SM > 0.175 and Data.SM < 0.176:
+            ax.plot(m,n,'bo', markersize=1)
+            #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
+        if Data.SM > 0.150 and Data.SM < 0.151:
+            ax.plot(m,n,'ko', markersize=1)
+            #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
+
+#print(options)
+MinSweep = [min(idx) for idx in zip(*options)][0]
 
 
-    
 ''' Draw Geometry '''
 
 # Inputs
 
-g = 0.5
-s = 2
+g = 0.4
+s = MinSweep
 Data = Planform(area,span,g,s)
 
 # Define points
@@ -167,6 +201,9 @@ point_13 = (-Data.y_MAC,np.tan(Data.sweep_LE)*Data.y_MAC + Data.c_MAC)
 
 
 # Plot points
+
+wingplanform = plt.figure()
+ax = wingplanform.add_subplot()
 points_outline = [point_1, point_2, point_3, point_4, point_5, point_6]
 points_quarterchord = [point_7,point_8,point_9]
 points_MAC_r = [point_10,point_11]
@@ -177,20 +214,21 @@ line_quarterchord = plt.Polygon(points_quarterchord, closed=None, fill=None, edg
 line_MAC_r = plt.Polygon(points_MAC_r, closed=None, fill=None, edgecolor='r')
 line_MAC_l = plt.Polygon(points_MAC_l, closed=None, fill=None, edgecolor='r')
 
-plt.gca().add_line(line_MAC_r)
-plt.gca().add_line(line_MAC_l)
-plt.gca().add_line(line_outline)
-plt.gca().add_line(line_quarterchord)
+wingplanform.gca().add_line(line_MAC_r)
+wingplanform.gca().add_line(line_MAC_l)
+wingplanform.gca().add_line(line_outline)
+wingplanform.gca().add_line(line_quarterchord)
 
-plt.plot(0,Data.x_CG, 'ro')
-plt.plot(0,Data.x_NP, 'bo')
-plt.plot(0,Data.x_CG, 'rx')
-plt.plot(0,Data.x_NP, 'rx')
-plt.plot(0,Data.x_CG, 'rx')
-plt.plot(0,Data.x_NP, 'rx')
-plt.axis('equal')
-plt.grid(True)
-plt.show()
+ax.plot(0,Data.x_CG, 'ro')
+ax.plot(0,Data.x_NP, 'bo')
+ax.plot(0,Data.x_CG_wing_struc, 'go')
+ax.plot(0.35*Data.span/2,Data.x_CG_engines_inner, 'rx')
+ax.plot(0.70*Data.span/2,Data.x_CG_engines_outer, 'rx')
+ax.plot(-0.35*Data.span/2,Data.x_CG_engines_inner, 'rx')
+ax.plot(-0.7*Data.span/2,Data.x_CG_engines_outer, 'rx')
+ax.axis('equal')
+ax.grid(True)
+
 
 
 
