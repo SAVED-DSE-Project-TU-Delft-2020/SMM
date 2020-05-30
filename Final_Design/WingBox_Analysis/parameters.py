@@ -5,7 +5,7 @@ Parameters file for the wing box analysis
 import numpy as np
 print('=========== LOADING DRONE PARAMETERS ===========')
 ### Cross-seciton parameters
-t_sk = 0.0005           #[m]
+t_sk = 0.001           #[m]
 t_sp = 0.0010           #[m]
 
 ### Wing geometry parameters
@@ -20,7 +20,7 @@ h = (b/2) / (1 - taper) #height of triangle having root chord as a base and side
 ### System paramters
 MTOM = 17.80            #[kg]
 L_D = 20
-LF = 4 * 0.25
+LF = 4 * 3 / 4
 
 print('Wingspan is:     ', b, '       m')
 print('Wing surface is: ', S, '     m2')
@@ -30,7 +30,7 @@ print('MTOM is:         ', MTOM,    '    kg')
 print('L/D is:          ', L_D)
 print('LF is :          ', LF)
 ### Discretise each half-wing into N segments
-N = 100
+N = 10
 segment_mesh = 100
 
 ### Masses ---- ALL IN KG

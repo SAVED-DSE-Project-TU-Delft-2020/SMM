@@ -6,14 +6,14 @@ import  scipy.interpolate as sp_interpolate
 import matplotlib.pyplot as plt
 
 
-debug = True
+debug = False
 
 y_mesh = np.linspace(par.b/2, par.PAY_WIDTH/2, par.N * par.segment_mesh)
-L_y = sp_integrate.cumtrapz(Loads.dL_dy_new(y_mesh), y_mesh, initial=0)       ### LIFT FORCE DISTRIBUTION (shear)
+L_y = - sp_integrate.cumtrapz(Loads.dL_dy_new(y_mesh), y_mesh, initial=0)       ### LIFT FORCE DISTRIBUTION (shear)
 w_final = Loads.w_final * par.LF
 w_final = sp_interpolate.interp1d(Loads.y, w_final)                     #Loads distribution interpolated
 S_y = sp_integrate.cumtrapz(w_final(y_mesh), y_mesh, initial=0)
-Mx_y = - sp_integrate.cumtrapz(S_y, y_mesh, initial=0)                  ### BENDING MOMENT DISTRIBUTION
+Mx_y = sp_integrate.cumtrapz(S_y, y_mesh, initial=0)                  ### BENDING MOMENT DISTRIBUTION
 
 indexes = np.linspace(par.segment_mesh,par.segment_mesh * par.N, par.N)
 indexes = np.ndarray.tolist(indexes)
@@ -28,7 +28,7 @@ for i in indexes:
 
 ## change this later once we get the data
 D_y = L_y / par.L_D
-Mz_y = - sp_integrate.cumtrapz(D_y, y_mesh, initial=0)
+Mz_y = sp_integrate.cumtrapz(D_y, y_mesh, initial=0)
 Sx_array = np.array([])
 Mz_array = np.array([])
 for i in indexes:

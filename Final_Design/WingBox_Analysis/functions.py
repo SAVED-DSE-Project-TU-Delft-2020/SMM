@@ -176,7 +176,7 @@ def get_shear_center(airfoil_points, airfoil_midpoints, Ixx, Izz, Izx, x_bar, z_
     theta = alpha_arm + (np.pi - alpha_vect)
 
     arms = np.sqrt(x_arm**2 + z_arm**2)
-    moments = shear_magnitudes * arms * np.sin(theta)
+    moments = - shear_magnitudes * arms * np.sin(theta)
     z_sc = np.sum(moments)
     print('z_sc = ',"{:2e}".format(z_sc), 'm')
 

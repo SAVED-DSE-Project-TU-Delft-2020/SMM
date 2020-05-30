@@ -36,7 +36,7 @@ print('X-axis is pointing towards the TE and Z-axis is pointing up')
 print('The CS origin depends of the input data')
 # print('loading workbook...')
 ### load points from excel
-wb = load_workbook(filename = r'NACA35120_Points.xlsx')
+wb = load_workbook(filename = r'CAL4014L_Points.xlsx')
 sheet = wb.worksheets[0]
 # print('creating mesh...')
 #print(sheet['A2'].value) # D18
@@ -145,12 +145,14 @@ for i in range(par.N):
     q_T_arr = np.vstack((q_T_arr, q_T))
 
 del sigma_yy, q_T
+sigma_yy_arr = sigma_yy_arr[1:,:]
+q_T_arr = q_T_arr[1:]
 
-##### SHEAR FLOW IS POSITIVE CLOCKWISE - IF WE LOOK AT THE AIRFOIL WHILE KEEPING THE LE ON THE LEFT
+##### SHEAR FLOW IS POSITIVE COUNTERCLOCKWISE - IF WE LOOK AT THE AIRFOIL WHILE KEEPING THE LE ON THE LEFT
 #### compute shear flows due to shear forces
 ###find_qb(Sx, Sz, Ixx, Izz, Izx, line_coordinates, t, x, z)
 ###find_q0(qb, line_coordinates, skin_perimeter):
-qb_arr = np.zeros(1)
+qb_arr = np.zeros(row_count)
 for i in range(par.N):
     i = int(i)
     x = airfoil_points_x_arr[i,:] - x_bar_arr[i]
@@ -160,10 +162,21 @@ for i in range(par.N):
     qb_temp = f.find_qb(Sx[i], shearz, Ixx_arr[i], Izz_arr[i], Izx_arr[i], line_coordinates, par.t_sk, x, z )
     q0_temp = f.find_q0(qb_temp, line_coordinates, np.sum(mesh_length_arr[i,:]))
     q_temp = qb_temp + q0_temp
-print(q_temp, z)
-sigma_yy_arr = sigma_yy_arr[1:,:]
-tau_xy_arr = q_T_arr[1:] / 10e5 / par.t_sk
+    qb_arr = np.vstack((qb_arr, q_temp))
+del q_temp, q0_temp, qb_temp
 
+qb_arr = qb_arr[1:,:]
+
+q_tot_arr = np.zeros(row_count)
+for i in range(par.N):
+    i = int(i)
+    q_tot_temp = qb_arr[i,:] + q_T_arr[i]
+    q_tot_arr = np.vstack((q_tot_arr, q_tot_temp))
+del q_tot_temp
+
+q_tot_arr = q_tot_arr[1:,:]
+tau_xy_arr = q_tot_arr / 10e5 / par.t_sk
+print(tau_xy_arr[0,:])
 y_locs_arr = np.zeros(row_count)
 y_locs_pos = np.linspace(par.b/2, par.PAY_WIDTH/2, par.N)
 
@@ -196,7 +209,6 @@ tau_xy_loc = tau_xy_arr[location]
 tau_yz_loc = sigma_yy_loc * 0
 tau_zx_loc = sigma_yy_loc * 0
 sigma_vm = np.sqrt(((sigma_yy_loc + sigma_xx_loc)**2 + (sigma_yy_loc - sigma_zz_loc)**2 + (sigma_zz_loc - sigma_xx_loc)**2) / 2 + 3 * (tau_xy_loc**2 + tau_yz_loc**2 + tau_zx_loc**2))
-print(sigma_vm.shape)
 print('=========== STRUCTURAL ANALYSIS COMPUTATIONS COMPLETED ===========')
 ###time program execution
 stop = timeit.default_timer()
@@ -214,7 +226,7 @@ y = airfoil_points_z_arr_root
 # needs to be (numlines) x (points per line) x 2 (for x and y)
 points = np.array([x, y]).T.reshape(-1, 1, 2)
 segments = np.concatenate([points[:-1], points[1:]], axis=1)
-
+print('Plotting ...')
 fig, axs = plt.subplots(1, 1)
 ax = plt.gca()
 # sets the ratio
@@ -222,11 +234,13 @@ ax.set_aspect(1)
 # Create a continuous norm to map from data points to colors
 # norm = plt.Normalize(sigma_yy_loc.min(), sigma_yy_loc.max())
 norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
+# norm = plt.Normalize(tau_xy_loc.min(), tau_xy_loc.max())
 # lc = LineCollection(segments, cmap='RdYlBu', norm=norm)
 lc = LineCollection(segments, cmap='RdYlBu_r', norm=norm)
 # Set the values used for colormapping
 # lc.set_array(sigma_yy_loc)
 lc.set_array(sigma_vm)
+# lc.set_array(tau_xy_loc)
 lc.set_linewidth(3)
 line = axs.add_collection(lc)
 fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]')
@@ -240,7 +254,8 @@ plt.scatter(x_ac_arr[location], z_ac_arr[location], label = 'Aerodynamic center'
 plt.scatter(x_bar_arr[location], z_bar_arr[location], label = 'Centroid', marker='1')
 axs.set_xlim(x.min() - 0.05, x.max() + 0.05)
 axs.set_ylim(y.min() - 0.05, y.max() + 0.05)
-plt.legend(loc = 'upper right')
+plt.legend()
+plt.savefig('test.pdf')
 plt.show()
 
 

@@ -38,18 +38,26 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     airfoil_points_z = airfoil_points[:,1]
     ### points for v&v
     if debug:
-        mesh = 100    #set to 150
+        mesh = 150    #set to 150
         ## increase number of nodes to check that section properties converge to a single value when number of nodes is indeed increased
-        ### define dummy wing box 1.2 meters wide, 1m tall, 0.5mm in thickness
-        airfoil_points_x1 = np.zeros(mesh) -0.2
-        airfoil_points_x2 = np.linspace(-0.2,1, mesh)
-        airfoil_points_x3 = np.ones(mesh)
-        airfoil_points_x4 = np.flip(airfoil_points_x2)
 
-        airfoil_points_z1 = np.linspace(-0.5, 0.5, mesh)
-        airfoil_points_z2 = 0.5 * np.ones(mesh)
-        airfoil_points_z3 = np.flip(airfoil_points_z1)
-        airfoil_points_z4 = -airfoil_points_z2
+        # airfoil_points_x1 = np.linspace(0, 0.5, mesh)
+        # airfoil_points_x2 = np.linspace(0.5, 1, mesh)
+        # airfoil_points_x3 = np.linspace(1, 0, mesh)
+        # airfoil_points_z1 = np.linspace(0, 0.8, mesh)
+        # airfoil_points_z2 = np.linspace(0.8, 0, mesh)
+        # airfoil_points_z3 = np.zeros(mesh)
+        # airfoil_points_x = np.hstack([airfoil_points_x1, airfoil_points_x2, airfoil_points_x3])
+        # airfoil_points_z = np.hstack([airfoil_points_z1, airfoil_points_z2, airfoil_points_z3])
+        # airfoil_points = np.array([airfoil_points_x, airfoil_points_z]).T
+        airfoil_points_x1 = np.linspace(0, 1.5, 1500)
+        airfoil_points_x2 = np.linspace(1.5, 0.9, 600)
+        airfoil_points_x3 = np.linspace(0.9, 1.5, 600)
+        airfoil_points_x4 = np.linspace(1.5, 0 ,1500)
+        airfoil_points_z1 = np.linspace(0, 0.8, 1500)
+        airfoil_points_z2 = np.linspace(0.8,0, 600)
+        airfoil_points_z3 = np.linspace(0, - 0.8, 600)
+        airfoil_points_z4 = np.linspace(- 0.8,0, 1500)
 
         airfoil_points_x = np.hstack([airfoil_points_x1, airfoil_points_x2, airfoil_points_x3, airfoil_points_x4])
         airfoil_points_z = np.hstack([airfoil_points_z1, airfoil_points_z2, airfoil_points_z3, airfoil_points_z4])
@@ -88,7 +96,7 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     ### Compute second moments of area
     Ixx = np.sum(mesh_area * (airfoil_midpoints_z - z_bar)**2)
     Izz = np.sum(mesh_area * (airfoil_midpoints_x - x_bar)**2)
-    Izx = np.sum(mesh_area * (airfoil_midpoints_x * airfoil_midpoints_z))
+    Izx = np.sum(mesh_area * ((airfoil_midpoints_x - z_bar) * (airfoil_midpoints_z - z_bar)))
     print('Ixx   = ', "{:3e}".format(Ixx), '    m4')
     print('Izz   = ', "{:3e}".format(Izz), '    m4')
     print('Izx   = ', "{:3e}".format(Izx), '    m4')
