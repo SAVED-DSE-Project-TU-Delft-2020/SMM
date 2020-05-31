@@ -175,8 +175,9 @@ for i in range(par.N):
 del q_tot_temp
 
 q_tot_arr = q_tot_arr[1:,:]
+
 tau_xy_arr = q_tot_arr / 10e5 / par.t_sk
-print(tau_xy_arr[0,:])
+
 y_locs_arr = np.zeros(row_count)
 y_locs_pos = np.linspace(par.b/2, par.PAY_WIDTH/2, par.N)
 

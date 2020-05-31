@@ -74,6 +74,7 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     mesh_length = np.sqrt((rolled_points_x - airfoil_points[:,0])**2 + (rolled_points_z - airfoil_points[:,1])**2)
     skin_per = np.sum(mesh_length)  ## [m] used to validate what has been done so far, as the perimeter of the skin was computed on CATiA
 
+
     A_enclosed = abs(np.trapz(airfoil_points_x, airfoil_points_z))
 
 
@@ -104,10 +105,10 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     x_sc, z_sc = f.get_shear_center(airfoil_points, airfoil_midpoints, Ixx, Izz, Izx, x_bar, z_bar, skin_per, mesh_length)
     if plotcs:
         plt.clf()
-        plt.figure(figsize=(10, 10))
+        # plt.figure(figsize=(10, 10))
         ax = plt.gca()
         # sets the ratio to 5
-        ax.set_aspect(0.45)
+        ax.set_aspect(1)
         plt.plot(airfoil_points_x, airfoil_points_z, label = 'Cross section', color = 'r')
         # plt.plot(np.linspace(0,c_loc, 150), np.zeros(150))
         plt.scatter([x_sc], [z_sc], label = 'Shear center', color = 'g')
