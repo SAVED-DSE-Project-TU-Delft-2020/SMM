@@ -33,9 +33,9 @@ print('LF is :          ', LF)
 ####### STRUCTURAL PARAMETERS ########
 main_spar_loc = 0.15
 aft_spar_loc = 0.75
-mainspar_cap_l = 0.40
+mainspar_cap_l = 0.040
 mainspar_cap_t = 0.001
-aftspar_cap_l = 0.020
+aftspar_cap_l = 0.040
 aftspar_cap_t = 0.001
 
 ### Discretise each half-wing into N segments
@@ -64,3 +64,9 @@ M_PARACH = 0.3
 PAY_CHORD = 0.295
 PAY_WIDTH = 0.268
 PAY_HEIGHT = 0.128
+
+#### ENGINE STUFF
+e1_loc = 0.5
+e2_loc = 1.0
+T1 = 100
+T2 = 100
