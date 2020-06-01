@@ -20,10 +20,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d6a687ad-88bb-4441-bc84-99887dd53366" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Cross_sec_opt.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buckling_computations.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cross_sec_opt.py" beforeDir="false" afterPath="$PROJECT_DIR$/Cross_sec_opt.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Load_CS.py" beforeDir="false" afterPath="$PROJECT_DIR$/Load_CS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/parameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/random_notes.py" beforeDir="false" afterPath="$PROJECT_DIR$/random_notes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/test.pdf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,7 +64,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="PyScientificConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.Cross_sec_opt">
+  <component name="RunManager" selected="Python.compute_stresses">
     <configuration name="Cross_sec_opt" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="WingBox_Analysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -75,28 +79,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Cross_sec_opt.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Interal_Loads" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="WingBox_Analysis" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Interal_Loads.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -127,6 +109,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="compute_stresses" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="WingBox_Analysis" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/compute_stresses.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="WingBox_Analysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -142,14 +146,14 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
       <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="parameters" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="random_notes" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="WingBox_Analysis" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -162,7 +166,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/parameters.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/random_notes.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -173,11 +177,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.compute_stresses" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.Cross_sec_opt" />
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.Interal_Loads" />
-        <item itemvalue="Python.Loads" />
-        <item itemvalue="Python.parameters" />
+        <item itemvalue="Python.random_notes" />
       </list>
     </recent_temporary>
   </component>
@@ -197,7 +201,11 @@
       <workItem from="1590662979067" duration="8153000" />
       <workItem from="1590676026360" duration="8237000" />
       <workItem from="1590684557406" duration="42261000" />
-      <workItem from="1590845810184" duration="13046000" />
+      <workItem from="1590845810184" duration="13138000" />
+      <workItem from="1590948734154" duration="1056000" />
+      <workItem from="1590955826309" duration="296000" />
+      <workItem from="1591000891100" duration="10773000" />
+      <workItem from="1591011752857" duration="1528000" />
     </task>
     <servers />
   </component>
@@ -225,74 +233,90 @@
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state x="2660" y="280" key="FileChooserDialogImpl/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590672649900" />
-    <state width="1877" height="146" key="GridCell.Tab.0.bottom" timestamp="1590948593327">
+    <state width="1877" height="503" key="GridCell.Tab.0.bottom" timestamp="1591011674819">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
-    <state width="1493" height="267" key="GridCell.Tab.0.bottom/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590921405999" />
-    <state width="1877" height="146" key="GridCell.Tab.0.bottom/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590948593327" />
+    <state width="1493" height="303" key="GridCell.Tab.0.bottom/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591006454418" />
+    <state width="1877" height="503" key="GridCell.Tab.0.bottom/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674819" />
     <state width="1877" height="351" key="GridCell.Tab.0.bottom/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
-    <state width="1877" height="146" key="GridCell.Tab.0.center" timestamp="1590948593327">
+    <state width="1877" height="503" key="GridCell.Tab.0.center" timestamp="1591011674817">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
-    <state width="1493" height="267" key="GridCell.Tab.0.center/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590921405998" />
-    <state width="1877" height="146" key="GridCell.Tab.0.center/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590948593327" />
+    <state width="1493" height="303" key="GridCell.Tab.0.center/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591006454418" />
+    <state width="1877" height="503" key="GridCell.Tab.0.center/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674817" />
     <state width="1877" height="351" key="GridCell.Tab.0.center/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
-    <state width="1877" height="146" key="GridCell.Tab.0.left" timestamp="1590948593327">
+    <state width="1877" height="503" key="GridCell.Tab.0.left" timestamp="1591011674816">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
-    <state width="1493" height="267" key="GridCell.Tab.0.left/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590921405998" />
-    <state width="1877" height="146" key="GridCell.Tab.0.left/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590948593327" />
+    <state width="1493" height="303" key="GridCell.Tab.0.left/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591006454417" />
+    <state width="1877" height="503" key="GridCell.Tab.0.left/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674816" />
     <state width="1877" height="351" key="GridCell.Tab.0.left/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
-    <state width="1877" height="146" key="GridCell.Tab.0.right" timestamp="1590948593327">
+    <state width="1877" height="503" key="GridCell.Tab.0.right" timestamp="1591011674818">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
-    <state width="1493" height="267" key="GridCell.Tab.0.right/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590921405998" />
-    <state width="1877" height="146" key="GridCell.Tab.0.right/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590948593327" />
+    <state width="1493" height="303" key="GridCell.Tab.0.right/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591006454418" />
+    <state width="1877" height="503" key="GridCell.Tab.0.right/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674818" />
     <state width="1877" height="351" key="GridCell.Tab.0.right/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
-    <state width="1877" height="351" key="GridCell.Tab.1.bottom" timestamp="1590793797151">
-      <screen x="0" y="0" width="1536" height="834" />
+    <state width="1877" height="503" key="GridCell.Tab.1.bottom" timestamp="1591011674824">
+      <screen x="1920" y="0" width="1920" height="1050" />
     </state>
-    <state width="1493" height="265" key="GridCell.Tab.1.bottom/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590620830306" />
-    <state width="1877" height="351" key="GridCell.Tab.1.bottom/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590748921861" />
+    <state width="1493" height="383" key="GridCell.Tab.1.bottom/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591004970524" />
+    <state width="1877" height="503" key="GridCell.Tab.1.bottom/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674824" />
     <state width="1877" height="351" key="GridCell.Tab.1.bottom/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
-    <state width="1877" height="351" key="GridCell.Tab.1.center" timestamp="1590793797151">
-      <screen x="0" y="0" width="1536" height="834" />
+    <state width="1877" height="503" key="GridCell.Tab.1.center" timestamp="1591011674822">
+      <screen x="1920" y="0" width="1920" height="1050" />
     </state>
-    <state width="1493" height="265" key="GridCell.Tab.1.center/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590620830306" />
-    <state width="1877" height="351" key="GridCell.Tab.1.center/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590748921860" />
+    <state width="1493" height="383" key="GridCell.Tab.1.center/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591004970524" />
+    <state width="1877" height="503" key="GridCell.Tab.1.center/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674822" />
     <state width="1877" height="351" key="GridCell.Tab.1.center/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
-    <state width="1877" height="351" key="GridCell.Tab.1.left" timestamp="1590793797151">
-      <screen x="0" y="0" width="1536" height="834" />
+    <state width="1877" height="503" key="GridCell.Tab.1.left" timestamp="1591011674821">
+      <screen x="1920" y="0" width="1920" height="1050" />
     </state>
-    <state width="1493" height="265" key="GridCell.Tab.1.left/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590620830305" />
-    <state width="1877" height="351" key="GridCell.Tab.1.left/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590748921860" />
+    <state width="1493" height="383" key="GridCell.Tab.1.left/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591004970524" />
+    <state width="1877" height="503" key="GridCell.Tab.1.left/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674821" />
     <state width="1877" height="351" key="GridCell.Tab.1.left/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
-    <state width="1877" height="351" key="GridCell.Tab.1.right" timestamp="1590793797151">
-      <screen x="0" y="0" width="1536" height="834" />
+    <state width="1877" height="503" key="GridCell.Tab.1.right" timestamp="1591011674823">
+      <screen x="1920" y="0" width="1920" height="1050" />
     </state>
-    <state width="1493" height="265" key="GridCell.Tab.1.right/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590620830306" />
-    <state width="1877" height="351" key="GridCell.Tab.1.right/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590748921861" />
+    <state width="1493" height="383" key="GridCell.Tab.1.right/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591004970524" />
+    <state width="1877" height="503" key="GridCell.Tab.1.right/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674823" />
     <state width="1877" height="351" key="GridCell.Tab.1.right/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
     <state x="2266" y="78" key="SettingsEditor" timestamp="1590669766619">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state x="277" y="62" key="SettingsEditor/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590608534843" />
     <state x="2266" y="78" key="SettingsEditor/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590669766619" />
+    <state x="2434" y="254" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1591009664943">
+      <screen x="1920" y="0" width="1920" height="1050" />
+    </state>
+    <state x="2434" y="254" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591009664943" />
     <state x="2459" y="195" width="840" height="854" key="search.everywhere.popup" timestamp="1590768913278">
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state x="431" y="155" width="672" height="678" key="search.everywhere.popup/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1590600566324" />
     <state x="2459" y="195" width="840" height="854" key="search.everywhere.popup/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1590768913278" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/WingBox_Analysis$Load_CS.coverage" NAME="Load_CS Coverage Results" MODIFIED="1590671182324" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WingBox_Analysis$Interal_Loads.coverage" NAME="Interal_Loads Coverage Results" MODIFIED="1590761329409" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/WingBox_Analysis$Cross_sec_opt.coverage" NAME="Cross_sec_opt Coverage Results" MODIFIED="1590948103880" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WingBox_Analysis$Cross_sec_opt.coverage" NAME="Cross_sec_opt Coverage Results" MODIFIED="1591011266125" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WingBox_Analysis$3D_Geometry.coverage" NAME="3D_Geometry Coverage Results" MODIFIED="1590675272143" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/WingBox_Analysis$random_notes.coverage" NAME="random_notes Coverage Results" MODIFIED="1590683360114" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WingBox_Analysis$Loads.coverage" NAME="Loads Coverage Results" MODIFIED="1590758172255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WingBox_Analysis$random_notes.coverage" NAME="random_notes Coverage Results" MODIFIED="1590949185133" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WingBox_Analysis$parameters.coverage" NAME="parameters Coverage Results" MODIFIED="1590743521327" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/WingBox_Analysis$main.coverage" NAME="main Coverage Results" MODIFIED="1590936758872" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WingBox_Analysis$main.coverage" NAME="main Coverage Results" MODIFIED="1591009961779" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/WingBox_Analysis$compute_stresses.coverage" NAME="compute_stresses Coverage Results" MODIFIED="1591017785539" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/WingBox_Analysis$compute_shear_cetner.coverage" NAME="compute_shear_cetner Coverage Results" MODIFIED="1590652379030" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

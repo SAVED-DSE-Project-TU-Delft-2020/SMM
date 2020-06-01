@@ -17,7 +17,7 @@ from openpyxl import load_workbook
 import parameters as par
 import functions as f
 
-def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, plotshow, plotsavefig):
+def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, plotshow, plotsavefig, mainspar_A, aftspar_A):
     print('=========== INITIALIZING CROSS SECTION COMPUTATIONS ===========')
     if debug:
         print('*************** DEBUG MODE IS ON ***************')
@@ -68,12 +68,9 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     airfoil_midpoints_x = (airfoil_points[:,0] + np.roll(airfoil_points[:,0],-1))/2
     airfoil_midpoints_z = (airfoil_points[:,1] + np.roll(airfoil_points[:,1],-1))/2
     airfoil_midpoints = np.vstack([airfoil_midpoints_x, airfoil_midpoints_z]).T
-    ### compute skin segments length
-    rolled_points_x = np.roll(airfoil_points[:,0], -1)
-    rolled_points_z = np.roll(airfoil_points[:,1], -1)
-    mesh_length = np.sqrt((rolled_points_x - airfoil_points[:,0])**2 + (rolled_points_z - airfoil_points[:,1])**2)
-    skin_per = np.sum(mesh_length)  ## [m] used to validate what has been done so far, as the perimeter of the skin was computed on CATiA
-
+    ### compute skin segments length and skin perimeter
+    skin_per, mesh_length = f.get_skin_per(airfoil_points)
+    #print(skin_per)## [m] used to validate what has been done so far, as the perimeter of the skin was computed on CATiA
 
     A_enclosed = abs(np.trapz(airfoil_points_x, airfoil_points_z))
 
@@ -84,11 +81,18 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     # airfoil_midpoints_z = np.array([0.25, 0.25, 0.25, 0.25, -0.25, -0.25, -0.25, -0.25])                                    #for validation
     # airfoil_midpoints_x = np.array([0.5 * 1/8, 0.5 * 3/8, 0.5 * 5/8, 0.5*7/8, 0.5 * 1/8, 0.5 * 3/8, 0.5 * 5/8, 0.5 * 7/8])  #for validation
     ### validated x_bar, z_bar, Ixx, Izz and Izx match analytical solution of two flat thin plates (t = 0.0005mm) 500mm apart and 500mm long
+    #### compute x and z spar caps locations
+
+    main_spar_upperz = np.max(airfoil_points_z[airfoil_points_x == 0])
+    main_spar_lowerz = np.min(airfoil_points_z[airfoil_points_x == 0])
+    aft_spar_upperz = np.max(airfoil_points_z[airfoil_points_x == np.max(airfoil_points_x)])
+    aft_spar_lowerz = np.min(airfoil_points_z[airfoil_points_x == np.max(airfoil_points_x)])
 
     mesh_area = mesh_length * par.t_sk
     # print('computing cross-section properties...')
-    x_bar = np.sum(mesh_area * airfoil_midpoints_x) / np.sum(mesh_area)
-    z_bar = np.sum(mesh_area * airfoil_midpoints_z) / np.sum(mesh_area)
+    x_bar = (np.sum(mesh_area * airfoil_midpoints_x) + 2 * aftspar_A * np.max(airfoil_points_x) ) / (np.sum(mesh_area) + 2 * mainspar_A + 2 * aftspar_A)
+    z_bar = (np.sum(mesh_area * airfoil_midpoints_z) + mainspar_A * (main_spar_lowerz + main_spar_upperz) + aftspar_A * (aft_spar_lowerz + aft_spar_upperz)) / (np.sum(mesh_area)
+                                                                                                                                                                 + 2 * mainspar_A + 2 * aftspar_A)
     print('')
     print('c_loc = ', round(c_loc,5), '         m')
     print('x_bar = ', round(x_bar,5), '         m')
@@ -105,7 +109,7 @@ def compute_CS_props(c_loc, airfoil_points_x, airfoil_points_z, debug, plotcs, p
     x_sc, z_sc = f.get_shear_center(airfoil_points, airfoil_midpoints, Ixx, Izz, Izx, x_bar, z_bar, skin_per, mesh_length)
     if plotcs:
         plt.clf()
-        # plt.figure(figsize=(10, 10))
+        plt.figure(figsize=(9, 5))
         ax = plt.gca()
         # sets the ratio to 5
         ax.set_aspect(1)

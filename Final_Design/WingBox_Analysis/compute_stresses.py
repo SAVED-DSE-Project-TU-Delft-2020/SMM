@@ -59,6 +59,21 @@ if debug:
     x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc, A_enclosed, airfoil_points_x_loc, airfoil_points_z_loc, mesh_length = CS.compute_CS_props(c_1, airfoil_points_x, airfoil_points_z, debug, plotcs, plotshow, plotsavefig)
     row_count = airfoil_points_x_loc.shape[0]
 
+main_spar_loc = par.main_spar_loc
+aft_spar_loc = par.aft_spar_loc
+mainspar_cap_l = par.mainspar_cap_l
+mainspar_cap_t = par.mainspar_cap_t
+aftspar_cap_l = par.aftspar_cap_l
+aftspar_cap_t = par.aftspar_cap_t
+mainspar_cap_A = mainspar_cap_l * mainspar_cap_t
+aftspar_cap_A = aftspar_cap_l * aftspar_cap_t
+
+### redefine shape according to spar locs
+airfoil_points_x_arr = np.array([airfoil_points_x])
+airfoil_points_x_arr[airfoil_points_x_arr < main_spar_loc] = main_spar_loc
+airfoil_points_x_arr[airfoil_points_x_arr > aft_spar_loc] = aft_spar_loc
+airfoil_points_x = np.ndarray.tolist(airfoil_points_x_arr)[0]
+
 
 ### create chords list
 c_locs = np.linspace(par.c_t, par.c_r, par.N)
@@ -76,13 +91,23 @@ airfoil_points_x_arr = np.zeros(row_count)
 airfoil_points_z_arr = np.zeros(row_count)
 mesh_length_arr = np.zeros(row_count)
 for c_loc in c_locs_list:
-    x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc, A_enclosed, airfoil_points_x_loc, airfoil_points_z_loc, mesh_length = CS.compute_CS_props(c_loc,
+    c_loc_ite = round(c_loc * (1 - (1 - aft_spar_loc) - main_spar_loc),5)
+    x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc, A_enclosed, airfoil_points_x_loc, airfoil_points_z_loc, mesh_length = CS.compute_CS_props(c_loc_ite,
                                                                                                               airfoil_points_x,
                                                                                                               airfoil_points_z,
                                                                                                               debug,
-                                                                                                              plotcs, plotshow, plotsavefig)
+                                                                                                              plotcs, plotshow, plotsavefig, mainspar_cap_A, aftspar_cap_A)
+
     x_bar_arr = np.append(x_bar_arr, x_bar)
     z_bar_arr = np.append(z_bar_arr, z_bar)
+
+    main_spar_upperz = np.max(airfoil_points_z_loc[airfoil_points_x_loc == 0])
+    main_spar_lowerz = np.min(airfoil_points_z_loc[airfoil_points_x_loc == 0])
+    aft_spar_upperz = np.max(airfoil_points_z_loc[airfoil_points_x_loc == np.max(airfoil_points_x_loc)])
+    aft_spar_lowerz = np.min(airfoil_points_z_loc[airfoil_points_x_loc == np.max(airfoil_points_x_loc)])
+
+    Ixx = Ixx + mainspar_cap_A * ((main_spar_upperz - z_bar)**2 + (main_spar_lowerz - z_bar)**2) + aftspar_cap_A * ((aft_spar_upperz - z_bar)**2 + (aft_spar_lowerz - z_bar)**2)
+    Izz = Izz + 2 * mainspar_cap_A * (z_bar**2) + 2 * aftspar_cap_A * (np.max(airfoil_points_x_loc) - x_bar)**2
     Ixx_arr = np.append(Ixx_arr, Ixx)
     Izz_arr = np.append(Izz_arr, Izz)
     Izx_arr = np.append(Izx_arr, Izx)
@@ -244,7 +269,7 @@ lc.set_array(sigma_vm)
 # lc.set_array(tau_xy_loc)
 lc.set_linewidth(3)
 line = axs.add_collection(lc)
-fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]')
+fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_vm.min(), sigma_vm.max(), 15), 2))
 plt.xlabel('x [$m$]')
 plt.ylabel('z [$m$]')
 plt.title('$\sigma_{yy}$ distribution along the airfoil, y = ' + str(y_loc) + 'm')
@@ -256,7 +281,7 @@ plt.scatter(x_bar_arr[location], z_bar_arr[location], label = 'Centroid', marker
 axs.set_xlim(x.min() - 0.05, x.max() + 0.05)
 axs.set_ylim(y.min() - 0.05, y.max() + 0.05)
 plt.legend()
-plt.savefig('test.pdf')
+# plt.savefig('test.pdf')
 plt.show()
 
 
