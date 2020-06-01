@@ -36,7 +36,7 @@ plotting = False
 showplot = False
 save_csfig = False
 start_timer = timeit.default_timer()
-mesh = 200
+mesh = 250
 
 
 c_lens = np.linspace(par.c_t, par.c_r, par.N)
@@ -73,7 +73,8 @@ for c_len in c_lens:
     cs_areas_size_arr = np.vstack((cs_areas_size_arr, cs_areas_size_temp))
     mesh_len_arr = np.vstack((mesh_len_arr, mesh_len_temp))
     i = i + 1
-
+del x_bar_temp, z_bar_temp, Ixx_temp, Izz_temp, Izx_temp, x_sc_temp, z_sc_temp, x_temp, z_temp, cs_areasloc_x_temp
+del cs_areasloc_z_temp, cs_areas_size_temp, mesh_len_temp
 # x_bar_arr = x_bar_arr
 # print(x_bar_arr[0])
 # z_bar_arr = z_bar_arr
@@ -89,8 +90,15 @@ cs_areasloc_z_arr = cs_areasloc_z_arr[1:,:]
 cs_areas_size_arr = cs_areas_size_arr[1:,:]
 mesh_len_arr = mesh_len_arr[1:,:]
 
+x_ac_arr = np.zeros(0)
+z_ac_arr = np.zeros(0)
+for i in range(par.N):
+    x_ac_temp, z_ac_temp = f.compute_ac(c_lens[i], x_arr[i,:], z_arr[i,:])
+    x_ac_arr = np.append(x_ac_arr, x_ac_temp)
+    z_ac_arr = np.append(z_ac_arr, z_ac_temp)
+del x_ac_temp, z_ac_temp
 
-del x_bar_temp, z_bar_temp, Ixx_temp, Izz_temp, Izx_temp, x_sc_temp, z_sc_temp, x_temp, z_temp
+
 ### gather internal loads
 Mx = internal_loads.Mx_array
 Mz = internal_loads.Mz_array
@@ -100,35 +108,49 @@ Sz = internal_loads.Sz_array
 
 
 sigma_yy_arr = np.zeros(2 * mesh)
+q_tot_arr = np.zeros(2 * mesh)
 for i in range(par.N):
     i = int(i)
     sigma_yy_temp = f.get_bending_stresses(Mx[i], Mz[i], Ixx_arr[i], Izz_arr[i], Izx_arr[i], x_arr[i,:], z_arr[i,:], x_bar_arr[i], z_bar_arr[i])
     sigma_yy_arr = np.vstack((sigma_yy_arr, sigma_yy_temp))
     line_coordinates = np.cumsum(mesh_len_arr[i,:])
-    q_pureshear = compute_pureshear.compute_pureshearflow(Sx[i], Sz[i], Ixx_arr[i], Izz_arr[i], Izx_arr[i], cs_areas_size_arr[i,:],
+    q_pureshear_temp = compute_pureshear.compute_pureshearflow(Sx[i], Sz[i], Ixx_arr[i], Izz_arr[i], Izx_arr[i], cs_areas_size_arr[i,:],
                                                           cs_areasloc_x_arr[i,:], cs_areasloc_z_arr[i,:], x_bar_arr[i], z_bar_arr[i], line_coordinates, line_coordinates[-1])
+    q_shearoffset_temp = compute_pureshear.compute_torsion_sc_offset(Sx[i], Sz[i], x_sc_arr[i], z_sc_arr[i], x_ac_arr[i], z_ac_arr[i])
+    q_tot_temp = q_pureshear_temp + q_shearoffset_temp
+    q_tot_arr = np.vstack((q_tot_arr, q_tot_temp))
 
+del sigma_yy_temp, q_tot_temp, q_shearoffset_temp, q_pureshear_temp
 sigma_yy_arr = sigma_yy_arr[1:,:]
+q_tot_arr = q_tot_arr[1:,:]
 
-del sigma_yy_temp
-# print(Mx)
-
-
+tau_xy_arr = q_tot_arr / par.t_sk
 
 
 
 
+location = -1
+############################################################################################################################################
+############################################################################################################################################
+#### COMPUTE VON MISES STRESSES ####
 
+### for now we define some stresses to be zero, we will change this once we have values
+sigma_yy_loc = sigma_yy_arr[location,:]/10e5
+sigma_xx_loc = sigma_yy_loc * 0
+sigma_zz_loc = sigma_yy_loc * 0
+tau_xy_loc = tau_xy_arr[location, :]/10e5
+tau_yz_loc = sigma_yy_loc * 0
+tau_zx_loc = sigma_yy_loc * 0
+sigma_vm = np.sqrt(((sigma_yy_loc + sigma_xx_loc)**2 + (sigma_yy_loc - sigma_zz_loc)**2 + (sigma_zz_loc - sigma_xx_loc)**2) / 2 + 3 * (tau_xy_loc**2 + tau_yz_loc**2 + tau_zx_loc**2))
+print(sigma_vm)
 
 ##############################################################################################################################################
 #### PLOTTING STUFF
-location = -1
-sigma_yy_loc = sigma_yy_arr[location,:]/10e5
+
+
 
 x = x_arr[location,:]
-print(x_sc_arr[location])
 y = z_arr[location,:]
-
 # Create a set of line segments so that we can color them individually
 # This creates the points as a N x 1 x 2 array so that we can stack points
 # together easily to get the segments. The segments array for line collection
@@ -141,25 +163,25 @@ ax = plt.gca()
 # sets the ratio
 ax.set_aspect(1)
 # Create a continuous norm to map from data points to colors
-norm = plt.Normalize(sigma_yy_loc.min(), sigma_yy_loc.max())
-# norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
+# norm = plt.Normalize(sigma_yy_loc.min(), sigma_yy_loc.max())
+norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
 # norm = plt.Normalize(tau_xy_loc.min(), tau_xy_loc.max())
 # lc = LineCollection(segments, cmap='RdYlBu', norm=norm)
 lc = LineCollection(segments, cmap='RdYlBu_r', norm=norm)
 # Set the values used for colormapping
-lc.set_array(sigma_yy_loc)
-# lc.set_array(sigma_vm)
+# lc.set_array(sigma_yy_loc)
+lc.set_array(sigma_vm)
 # lc.set_array(tau_xy_loc)
 lc.set_linewidth(3)
 line = axs.add_collection(lc)
-fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_yy_loc.min(), sigma_yy_loc.max(), 15), 2))
+fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_vm.min(), sigma_vm.max(), 14), 2))
 plt.xlabel('x [$m$]')
 plt.ylabel('z [$m$]')
 plt.title('$\sigma_{yy}$ distribution along the airfoil, y = ' + str(location) + 'm')
 plt.minorticks_on()
 plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
 plt.scatter(x_sc_arr[location], z_sc_arr[location], marker='*', label = 'Shear center')
-# plt.scatter(x_ac_arr[location], z_ac_arr[location], label = 'Aerodynamic center')
+plt.scatter(x_ac_arr[location], z_ac_arr[location], label = 'Aerodynamic center', marker='+')
 plt.scatter(x_bar_arr[location], z_bar_arr[location], label = 'Centroid', marker='1')
 axs.set_xlim(x.min() - 0.05, x.max() + 0.05)
 axs.set_ylim(y.min() - 0.05, y.max() + 0.05)

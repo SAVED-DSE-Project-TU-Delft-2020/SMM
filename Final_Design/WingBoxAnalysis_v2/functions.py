@@ -10,6 +10,17 @@ def find_nearest(array, value):
     idx = (np.abs(array - value)).argmin()
     return idx
 
+def find_nearestval(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
+
+def compute_ac(c_loc, cspoints_x, cspoints_z):
+    x_ac = 0.25 * c_loc
+    z_ac_upper = cspoints_z[cspoints_x == f.find_nearestval(cspoints_x, x_ac)]
+    z_ac = (z_ac_upper[0] + z_ac_upper[1]) / 2
+    return x_ac, z_ac
+
 def findchord(c_root, y, h):
     '''
     :param y: spanwise location

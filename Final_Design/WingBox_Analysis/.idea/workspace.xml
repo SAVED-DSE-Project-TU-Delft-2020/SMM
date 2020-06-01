@@ -20,20 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d6a687ad-88bb-4441-bc84-99887dd53366" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/Compute_CS.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/Load_CS.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/compute_boom_areas.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/compute_normalstress.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/compute_pureshear.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/define_spars.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/external_loads.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/gather_points.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/internal_loads.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/randomnotes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/compute_pureshear.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/compute_pureshear.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -211,7 +200,7 @@
       <workItem from="1590948734154" duration="1056000" />
       <workItem from="1590955826309" duration="296000" />
       <workItem from="1591000891100" duration="10773000" />
-      <workItem from="1591011752857" duration="11947000" />
+      <workItem from="1591011752857" duration="13339000" />
     </task>
     <servers />
   </component>
