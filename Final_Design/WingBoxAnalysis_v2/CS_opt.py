@@ -34,16 +34,36 @@ def Load_CS(mesh, debug, c_len, plotting, save_csfig, showplot):
     aft_spar_A = aft_spar_t * aft_spar_w
 
 
-    airfoil_points_x = define_spars.cut_cs(airfoil_points_x, main_spar_loc, aft_spar_loc, debug)
-    cs_areasloc_x, cs_areasloc_z, cs_areas_size, mesh_len = compute_boom_areas.boomareas(airfoil_points_x, airfoil_points_z, mesh, par.t_sk, main_spar_A, aft_spar_A, main_spar_loc, aft_spar_loc, debug)
-    x_bar, z_bar = CS.compute_centroid(cs_areasloc_x, cs_areasloc_z, cs_areas_size)
-    print('x_bar = ', round(x_bar, 5), '         m')
-    print('z_bar = ', round(z_bar, 5), '         m')
-    Ixx, Izz, Izx = CS.compute_SMOA(cs_areasloc_x, cs_areasloc_z, cs_areas_size, x_bar, z_bar)
-    print('Ixx   = ', "{:3e}".format(Ixx), '    m4')
-    print('Izz   = ', "{:3e}".format(Izz), '    m4')
-    print('Izx   = ', "{:3e}".format(Izx), '    m4')
 
+
+    main_spar_locs = np.linspace(0.01, main_spar_loc, 1000)
+    Ixxs = []
+    locs = []
+    for main_spar_loc in main_spar_locs:
+        airfoil_points_x = define_spars.cut_cs(airfoil_points_x, main_spar_loc, aft_spar_loc, debug)
+        cs_areasloc_x, cs_areasloc_z, cs_areas_size, mesh_len = compute_boom_areas.boomareas(airfoil_points_x, airfoil_points_z, mesh, par.t_sk, main_spar_A, aft_spar_A, main_spar_loc, aft_spar_loc, debug)
+        x_bar, z_bar = CS.compute_centroid(cs_areasloc_x, cs_areasloc_z, cs_areas_size)
+        print('x_bar = ', round(x_bar, 5), '         m')
+        print('z_bar = ', round(z_bar, 5), '         m')
+        Ixx, Izz, Izx = CS.compute_SMOA(cs_areasloc_x, cs_areasloc_z, cs_areas_size, x_bar, z_bar)
+        print('Ixx   = ', "{:3e}".format(Ixx), '    m4')
+        print('Izz   = ', "{:3e}".format(Izz), '    m4')
+        print('Izx   = ', "{:3e}".format(Izx), '    m4')
+        Ixx = Ixx * 10e11
+        Ixxs.append(Ixx)
+        locs.append(main_spar_loc)
+    plt.figure(figsize=(8, 5))
+    plt.xlabel('Main spar location as a % of chord [-]')
+    plt.ylabel('$I_{xx}$ [$mm^4$]')
+    plt.title('Variation of second moment of area with different main spar locations, aft spar = 0.75c')
+    plt.minorticks_on()
+    plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.1)
+    plt.plot(locs, Ixxs, label='Second moment of area')
+    # plt.plot(locs, 0.95 * Ixxs[0] * np.ones(locs.shape[0]))
+    # plt.scatter([locs[np.where(Ixxs == np.max(Ixxs))]], [np.max(Ixxs)], marker='o', label='Design point',edgecolors='r', facecolor='none')
+    plt.legend()
+    plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Detailed Design\\Plots\\optimal_sparloc.pdf',dpi=600)
+    plt.show()
 
     mesh_perimeter = np.cumsum(mesh_len)
     skin_per = mesh_perimeter[-1]

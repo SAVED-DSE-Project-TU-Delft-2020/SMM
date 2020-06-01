@@ -12,6 +12,7 @@ def boomareas(cs_points_x, cs_points_z, mesh, t_sk, A_mainspar, A_aftspar, main_
     if debug:
         print("Debug mode - spars addition is being skipped")
     else:
+        print(main_spar_loc, cs_areasloc_x)
         mainspar_max_z = cs_areasloc_z[cs_areasloc_x == main_spar_loc].max()
         mainspar_min_z = cs_areasloc_z[cs_areasloc_x == main_spar_loc].min()
         aftspar_max_z = cs_areasloc_z[cs_areasloc_x == aft_spar_loc].max()

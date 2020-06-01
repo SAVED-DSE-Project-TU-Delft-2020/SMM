@@ -31,7 +31,7 @@ print('L/D is:          ', L_D)
 print('LF is :          ', LF)
 
 ####### STRUCTURAL PARAMETERS ########
-main_spar_loc = 0.15
+main_spar_loc = 0.10
 aft_spar_loc = 0.75
 mainspar_cap_l = 0.040
 mainspar_cap_t = 0.001
