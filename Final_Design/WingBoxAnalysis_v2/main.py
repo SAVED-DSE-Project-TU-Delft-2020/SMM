@@ -28,20 +28,25 @@ import compute_boom_areas
 import define_spars
 import Compute_CS as CS
 import Load_CS
+# import CS_opt as Load_CS
 import internal_loads
 import compute_normalstress
+import compute_buckling
+
 
 debug = False
 plotting = False
 showplot = False
 save_csfig = False
 solve = True
+stiffeners = True
 
 start_timer = timeit.default_timer()
-mesh = 250
+mesh = 1000
 
 
-c_lens = np.linspace(par.c_r, par.c_r, par.N)
+c_lens = np.linspace(par.c_t, par.c_r, par.N)
+y_pos = np.linspace(par.b/2, 0, par.N)
 c_lens = np.ndarray.tolist(c_lens)
 x_bar_arr = np.zeros(0)
 z_bar_arr = np.zeros(0)
@@ -56,11 +61,14 @@ cs_areasloc_x_arr = np.zeros(2 * mesh)
 cs_areasloc_z_arr = np.zeros(2 * mesh)
 cs_areas_size_arr = np.zeros(2 * mesh)
 mesh_len_arr = np.zeros(2 * mesh)
+mainspar_z_arr = np.zeros(2)
+aftspar_z_arr = np.zeros(2)
 i = 0
 for c_len in c_lens:
 
     x_bar_temp, z_bar_temp, Ixx_temp, Izz_temp, Izx_temp, x_sc_temp, z_sc_temp, x_temp, z_temp, cs_areasloc_x_temp, \
-    cs_areasloc_z_temp, cs_areas_size_temp, mesh_len_temp = Load_CS.Load_CS(mesh, debug, c_len, plotting, save_csfig, showplot)
+    cs_areasloc_z_temp, cs_areas_size_temp, mesh_len_temp,mainspar_min_z_temp, mainspar_max_z_temp, aftspar_min_z_temp, \
+    aftspar_max_z_temp = Load_CS.Load_CS(mesh, debug, c_len, plotting, save_csfig, showplot, stiffeners)
     x_bar_arr = np.append(x_bar_arr, x_bar_temp)
     z_bar_arr = np.append(z_bar_arr, z_bar_temp)
     Ixx_arr = np.append(Ixx_arr, Ixx_temp)
@@ -74,9 +82,12 @@ for c_len in c_lens:
     cs_areasloc_z_arr = np.vstack((cs_areasloc_z_arr, cs_areasloc_z_temp))
     cs_areas_size_arr = np.vstack((cs_areas_size_arr, cs_areas_size_temp))
     mesh_len_arr = np.vstack((mesh_len_arr, mesh_len_temp))
+    mainspar_z_arr = np.vstack((mainspar_z_arr, [mainspar_min_z_temp, mainspar_max_z_temp]))
+    aftspar_z_arr = np.vstack((aftspar_z_arr, [aftspar_min_z_temp, aftspar_max_z_temp]))
     i = i + 1
 del x_bar_temp, z_bar_temp, Ixx_temp, Izz_temp, Izx_temp, x_sc_temp, z_sc_temp, x_temp, z_temp, cs_areasloc_x_temp
-del cs_areasloc_z_temp, cs_areas_size_temp, mesh_len_temp
+del cs_areasloc_z_temp, cs_areas_size_temp, mesh_len_temp, mainspar_max_z_temp, mainspar_min_z_temp, aftspar_min_z_temp
+del aftspar_max_z_temp
 # x_bar_arr = x_bar_arr
 # print(x_bar_arr[0])
 # z_bar_arr = z_bar_arr
@@ -91,6 +102,8 @@ cs_areasloc_x_arr = cs_areasloc_x_arr[1:,:]
 cs_areasloc_z_arr = cs_areasloc_z_arr[1:,:]
 cs_areas_size_arr = cs_areas_size_arr[1:,:]
 mesh_len_arr = mesh_len_arr[1:,:]
+mainspar_z_arr = mainspar_z_arr[1:,:]
+aftspar_z_arr = aftspar_z_arr[1:,:]
 
 x_ac_arr = np.zeros(0)
 z_ac_arr = np.zeros(0)
@@ -111,33 +124,62 @@ if solve:
 
     sigma_yy_arr = np.zeros(2 * mesh)
     q_tot_arr = np.zeros(2 * mesh)
+    line_coordinates_arr = np.zeros(2 * mesh)
     for i in range(par.N):
         i = int(i)
         sigma_yy_temp = f.get_bending_stresses(Mx[i], Mz[i], Ixx_arr[i], Izz_arr[i], Izx_arr[i], x_arr[i,:], z_arr[i,:], x_bar_arr[i], z_bar_arr[i])
         sigma_yy_arr = np.vstack((sigma_yy_arr, sigma_yy_temp))
         line_coordinates = np.cumsum(mesh_len_arr[i,:])
+        line_coordinates_arr = np.vstack((line_coordinates_arr, line_coordinates))
         q_pureshear_temp = compute_pureshear.compute_pureshearflow(Sx[i], Sz[i], Ixx_arr[i], Izz_arr[i], Izx_arr[i], cs_areas_size_arr[i,:],
                                                               cs_areasloc_x_arr[i,:], cs_areasloc_z_arr[i,:], x_bar_arr[i], z_bar_arr[i], line_coordinates, line_coordinates[-1])
         q_shearoffset_temp = compute_pureshear.compute_torsion_sc_offset(Sx[i], Sz[i], x_sc_arr[i], z_sc_arr[i], x_ac_arr[i], z_ac_arr[i])
         q_tot_temp = q_pureshear_temp + q_shearoffset_temp
         q_tot_arr = np.vstack((q_tot_arr, q_tot_temp))
 
-    del sigma_yy_temp, q_tot_temp, q_shearoffset_temp, q_pureshear_temp
+    del sigma_yy_temp, q_tot_temp, q_shearoffset_temp, q_pureshear_temp, line_coordinates
     sigma_yy_arr = sigma_yy_arr[1:,:]
     q_tot_arr = q_tot_arr[1:,:]
+    line_coordinates_arr = line_coordinates_arr[1:,:]
 
     tau_xy_arr = q_tot_arr / par.t_sk
 
 
 
 
+
+
+
+
     location = -1
+    sigma_cr_skin = compute_buckling.compute_axial_buckling(4, 50 * 10e8, 0.33, par.t_sk, line_coordinates_arr[location, :])
+    sigma_yy_loc = sigma_yy_arr[location,:]/10e5
+    # z_arr_loc = z_arr[location,:]
+    # z_mainsparup_real = z_arr_loc[z_arr_loc == f.find_nearestval(z_arr_loc, mainspar_z_arr[location,1])]
+    # z_aftsparup_real = z_arr_loc[z_arr_loc == f.find_nearestval(z_arr_loc, aftspar_z_arr[location, 1])]
+    # start_buckling = np.where(z_arr_loc == z_mainsparup_real)[0][0]
+    # stop_buckling = np.where(z_arr_loc == z_aftsparup_real)[0][0]
+    # line_coord = 0
+    # iteration = 0
+    # for mesh in mesh_len_arr[location, start_buckling:stop_buckling]:
+    #     line_coord = line_coord + mesh
+    #     sigma_cr_skin_temp = compute_buckling.compute_axial_buckling(4, 50 * 10e8, 0.33, par.t_sk, line_coord)
+    #     excess = sigma_cr_skin_temp/10e5 + sigma_yy_loc[start_buckling + iteration]
+    #     print(excess)
+    #     if excess < 0:
+    #         print('placing stiffener')
+    #         print('stiffener x-loc: ', x_arr[location, iteration + start_buckling])
+    #         print('stiffener z_loc: ', z_arr_loc[iteration + start_buckling])
+
+
     ############################################################################################################################################
     ############################################################################################################################################
     #### COMPUTE VON MISES STRESSES ####
 
     ### for now we define some stresses to be zero, we will change this once we have values
-    sigma_yy_loc = sigma_yy_arr[location,:]/10e5
+
+    sigma_excess = sigma_cr_skin/10e5 + sigma_yy_loc
+    sigma_excess = np.ma.masked_where(sigma_excess > 0, sigma_excess)
     sigma_xx_loc = sigma_yy_loc * 0
     sigma_zz_loc = sigma_yy_loc * 0
     tau_xy_loc = tau_xy_arr[location, :]/10e5
@@ -169,20 +211,22 @@ if solve:
     ax.set_aspect(1)
     # Create a continuous norm to map from data points to colors
     # norm = plt.Normalize(sigma_yy_loc.min(), sigma_yy_loc.max())
-    norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
+    # norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
     # norm = plt.Normalize(tau_xy_loc.min(), tau_xy_loc.max())
+    norm = plt.Normalize(sigma_excess.min(), sigma_excess.max())
     # lc = LineCollection(segments, cmap='RdYlBu', norm=norm)
     lc = LineCollection(segments, cmap='RdYlBu_r', norm=norm)
     # Set the values used for colormapping
     # lc.set_array(sigma_yy_loc)
-    lc.set_array(sigma_vm)
+    # lc.set_array(sigma_vm)
+    lc.set_array(sigma_excess)
     # lc.set_array(tau_xy_loc)
     lc.set_linewidth(3)
     line = axs.add_collection(lc)
-    fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_vm.min(), sigma_vm.max(), 14), 2))
+    fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal')#, ticks = np.round(np.linspace(-5, 5, 14), 2))
     plt.xlabel('x [$m$]')
     plt.ylabel('z [$m$]')
-    plt.title('$\sigma_{yy}$ distribution along the airfoil, y = ' + str(location) + 'm')
+    plt.title('$\sigma_{yy}$ distribution along the airfoil, y = ' + str(y_pos[location]) + 'm')
     plt.minorticks_on()
     plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
     plt.scatter(x_sc_arr[location], z_sc_arr[location], marker='*', label = 'Shear center')

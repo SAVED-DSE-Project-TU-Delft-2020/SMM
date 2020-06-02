@@ -40,15 +40,16 @@ def Load_CS(mesh, debug, c_len, plotting, save_csfig, showplot):
     Ixxs = []
     locs = []
     for main_spar_loc in main_spar_locs:
+
         airfoil_points_x = define_spars.cut_cs(airfoil_points_x, main_spar_loc, aft_spar_loc, debug)
         cs_areasloc_x, cs_areasloc_z, cs_areas_size, mesh_len = compute_boom_areas.boomareas(airfoil_points_x, airfoil_points_z, mesh, par.t_sk, main_spar_A, aft_spar_A, main_spar_loc, aft_spar_loc, debug)
         x_bar, z_bar = CS.compute_centroid(cs_areasloc_x, cs_areasloc_z, cs_areas_size)
-        print('x_bar = ', round(x_bar, 5), '         m')
-        print('z_bar = ', round(z_bar, 5), '         m')
+        # print('x_bar = ', round(x_bar, 5), '         m')
+        # print('z_bar = ', round(z_bar, 5), '         m')
         Ixx, Izz, Izx = CS.compute_SMOA(cs_areasloc_x, cs_areasloc_z, cs_areas_size, x_bar, z_bar)
-        print('Ixx   = ', "{:3e}".format(Ixx), '    m4')
-        print('Izz   = ', "{:3e}".format(Izz), '    m4')
-        print('Izx   = ', "{:3e}".format(Izx), '    m4')
+        # print('Ixx   = ', "{:3e}".format(Ixx), '    m4')
+        # print('Izz   = ', "{:3e}".format(Izz), '    m4')
+        # print('Izx   = ', "{:3e}".format(Izx), '    m4')
         Ixx = Ixx * 10e11
         Ixxs.append(Ixx)
         locs.append(main_spar_loc)

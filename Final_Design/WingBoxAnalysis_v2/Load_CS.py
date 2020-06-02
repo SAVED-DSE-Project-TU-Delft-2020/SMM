@@ -15,11 +15,16 @@ import gather_points
 import compute_boom_areas
 import define_spars
 import Compute_CS as CS
+import stiffening
 
-def Load_CS(mesh, debug, c_len, plotting, save_csfig, showplot):
+
+def Load_CS(mesh, debug, c_len, plotting, save_csfig, showplot, stiffeners):
     print('=========== INITIALIZING CROSS SECTION COMPUTATIONS ===========')
     if debug:
         print('*************** DEBUG MODE IS ON ***************')
+    if stiffeners:
+        print('*************** PLACING STIFFENERS ***************')
+        # stiffeners_locs =
 
     airfoil_points_x, airfoil_points_z = gather_points.gatherpoints(mesh, debug)
     airfoil_points_x = airfoil_points_x * c_len
@@ -35,7 +40,9 @@ def Load_CS(mesh, debug, c_len, plotting, save_csfig, showplot):
 
 
     airfoil_points_x = define_spars.cut_cs(airfoil_points_x, main_spar_loc, aft_spar_loc, debug)
-    cs_areasloc_x, cs_areasloc_z, cs_areas_size, mesh_len = compute_boom_areas.boomareas(airfoil_points_x, airfoil_points_z, mesh, par.t_sk, main_spar_A, aft_spar_A, main_spar_loc, aft_spar_loc, debug)
+    cs_areasloc_x, cs_areasloc_z, cs_areas_size, mesh_len,mainspar_min_z, mainspar_max_z, aftspar_min_z, aftspar_max_z = \
+        compute_boom_areas.boomareas(airfoil_points_x, airfoil_points_z, mesh, par.t_sk, main_spar_A, aft_spar_A, main_spar_loc, aft_spar_loc, debug)
+
     x_bar, z_bar = CS.compute_centroid(cs_areasloc_x, cs_areasloc_z, cs_areas_size)
     print('x_bar = ', round(x_bar, 5), '         m')
     print('z_bar = ', round(z_bar, 5), '         m')
@@ -66,4 +73,4 @@ def Load_CS(mesh, debug, c_len, plotting, save_csfig, showplot):
         if showplot:
             plt.show()
 
-    return x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc, airfoil_points_x, airfoil_points_z, cs_areasloc_x, cs_areasloc_z, cs_areas_size, mesh_len
+    return x_bar, z_bar, Ixx, Izz, Izx, x_sc, z_sc, airfoil_points_x, airfoil_points_z, cs_areasloc_x, cs_areasloc_z, cs_areas_size, mesh_len, mainspar_min_z, mainspar_max_z, aftspar_min_z, aftspar_max_z

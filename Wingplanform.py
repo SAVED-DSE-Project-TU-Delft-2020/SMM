@@ -40,11 +40,11 @@ span           = 3                  #[m]
 m_engine_inner = 0.4                #[kg]
 m_engine_outer = 0.4                #[kg]
 m_wing_struc   = 8.5                #[kg]
-m_avpase       = 0.836 - 0.5        #[kg] Avionics, Parachute and Sensors
+m_avpase       = 0.836         #[kg] Avionics, Parachute and Sensors
 m_battery      = 3.6                #[kg] Battery mass
 m_payload      = 3                  #[kg] Payload mass
 
-x_CG_battery   = 0.15               #[m]
+x_CG_battery   = 0.1               #[m]
 x_CG_avpase    = 0.35               #[m]
 
 x_CG_without_wing_group = (x_CG_battery * m_battery + x_CG_avpase * m_avpase) / (m_battery+m_avpase)
@@ -60,6 +60,17 @@ width_payload  = 0.268
 length_payload = 0.295 
 height_payload = 0.118
 
+thickness_pack = 0.042
+width_pack = 0.082
+length_pack = 0.195
+width_battery = length_pack
+length_battery = thickness_pack+ width_pack
+height_battery = 2*thickness_pack
+
+
+width_lidar =0.061
+length_lidar =0.035
+height_lidar  =0.061
 # Surface Area
 
 area = m_total *9.80665 / wing_loading
@@ -181,13 +192,12 @@ for m in taperlist:
 #print(options)
 MinSweep = [min(idx) for idx in zip(*options)][0]
 
-
 ''' Draw Geometry '''
 
 # Inputs
 
-g = 0.4
-s = MinSweep
+g = 0.35
+s = 20
 Data = Planform(area,span,g,s)
 
 # Define points
@@ -218,6 +228,11 @@ point_15 = (width_payload/2, Data.x_CG + length_payload/2)
 point_16 = (-width_payload/2, Data.x_CG - length_payload/2)
 point_17 = (width_payload/2, Data.x_CG - length_payload/2)
 
+point_18 = (-width_battery/2, Data.x_CG - length_payload/2-0.005)
+point_19 = (-width_battery/2, Data.x_CG - length_payload/2 - length_battery -0.005)
+point_20 = (width_battery/2,Data.x_CG - length_payload/2 - length_battery-0.005)
+point_21 = (width_battery/2,Data.x_CG - length_payload/2-0.005)
+
 # Plot points
 
 wingplanform        = plt.figure()
@@ -227,28 +242,91 @@ points_quarterchord = [point_7,point_8,point_9]
 points_MAC_r        = [point_10,point_11]
 points_MAC_l        = [point_12,point_13]
 points_payload      = [point_14,point_15,point_17,point_16]
+points_battery      = [point_18,point_19,point_20,point_21]
 
 line_outline        = plt.Polygon(points_outline, closed=True, fill=None, edgecolor='r')
 line_quarterchord   = plt.Polygon(points_quarterchord, closed=None, fill=None, edgecolor='r')
 line_MAC_r          = plt.Polygon(points_MAC_r, closed=None, fill=None, edgecolor='b')
 line_MAC_l          = plt.Polygon(points_MAC_l, closed=None, fill=None, edgecolor='b')
 line_payload        = plt.Polygon(points_payload, closed=True, fill=None, edgecolor='r')
+line_battery        = plt.Polygon(points_battery, closed=True, fill=None, edgecolor='y')
 
 wingplanform.gca().add_line(line_MAC_r)
 wingplanform.gca().add_line(line_MAC_l)
 wingplanform.gca().add_line(line_outline)
 wingplanform.gca().add_line(line_quarterchord)
 wingplanform.gca().add_line(line_payload)
+wingplanform.gca().add_line(line_battery)
 
 ax.plot(0,Data.x_CG, 'ro')
 ax.plot(0,Data.x_NP, 'bo')
 ax.plot(0,Data.x_CG_wing_struc, 'go')
+ax.plot(0,x_CG_battery, 'yo')
 ax.plot(0.35*Data.span/2,Data.x_CG_engines_inner, 'rx')
 ax.plot(0.70*Data.span/2,Data.x_CG_engines_outer, 'rx')
 ax.plot(-0.35*Data.span/2,Data.x_CG_engines_inner, 'rx')
 ax.plot(-0.7*Data.span/2,Data.x_CG_engines_outer, 'rx')
 ax.axis('equal')
 ax.grid(True)
+
+
+"""Draw side view"""
+
+
+sideview = plt.figure()
+ax = sideview.add_subplot()
+
+#Payload
+
+point_22 = (Data.x_CG - length_payload/2, -height_payload/2)
+point_23 = (Data.x_CG - length_payload/2,+height_payload/2)
+point_24 = (Data.x_CG + length_payload/2,+height_payload/2)
+point_25 = (Data.x_CG + length_payload/2,-height_payload/2)
+
+
+
+#Battery
+
+point_26 = (Data.x_CG - length_payload/2-0.005,-thickness_pack)
+point_27 = (Data.x_CG - length_payload/2-0.005,thickness_pack)
+point_28 = (Data.x_CG - length_payload/2-width_pack-0.005,thickness_pack)
+point_29 = (Data.x_CG - length_payload/2-width_pack-0.005,width_pack/2)
+point_30 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.005,width_pack/2)
+point_31 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.005,-width_pack/2)
+point_32 = (Data.x_CG - length_payload/2-width_pack-0.005,-width_pack/2)
+point_33 = (Data.x_CG - length_payload/2-width_pack-0.005,-thickness_pack)
+
+
+#Lidar
+
+point_34 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.01,height_lidar/2)
+point_35 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-length_lidar-0.01,height_lidar/2)
+point_36 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-length_lidar-0.01,-height_lidar/2)
+point_37 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.01,-height_lidar/2)
+
+
+s_points_payload = [point_22,point_23, point_24, point_25]
+s_points_battery = [point_26,point_27, point_28, point_29,point_30,point_31,point_32,point_33]
+s_points_lidar  = [point_34,point_35,point_36,point_37]
+
+s_line_payload = plt.Polygon(s_points_payload,closed=True, fill=None, edgecolor='r')
+s_line_battery = plt.Polygon(s_points_battery,closed=True, fill=None, edgecolor='y')
+s_line_lidar = plt.Polygon(s_points_lidar,closed=True, fill=None, edgecolor='g')
+
+
+sideview.gca().add_line(s_line_payload)
+sideview.gca().add_line(s_line_battery)
+sideview.gca().add_line(s_line_lidar)
+ax.axis('equal')
+ax.grid(True)
+
+
+
+
+
+
+plt.show()
+
 
 
 
