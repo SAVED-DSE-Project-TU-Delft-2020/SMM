@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
     # Forward spar location at 10% of the Chord
     
-    # Aft spar location at 60% of the chord
+    # Aft spar location at 65% of the chord
     
     # Wing structural longitudinal CG lies at 70% of distance between main and aft spar at 35 % of the semiwingspan
     
@@ -44,7 +44,7 @@ m_avpase       = 0.836 - 0.5        #[kg] Avionics, Parachute and Sensors
 m_battery      = 3.6                #[kg] Battery mass
 m_payload      = 3                  #[kg] Payload mass
 
-x_CG_battery   = 0.15               #[m]
+x_CG_battery   = 0.1               #[m]
 x_CG_avpase    = 0.35               #[m]
 
 x_CG_without_wing_group = (x_CG_battery * m_battery + x_CG_avpase * m_avpase) / (m_battery+m_avpase)
@@ -59,6 +59,10 @@ m_total = m_wing_group + m_without_wing_group + m_payload
 width_payload  = 0.268
 length_payload = 0.295 
 height_payload = 0.118
+
+width_battery = 0.195
+length_battery = 0.124
+height_battery = 0.084
 
 # Surface Area
 
@@ -123,7 +127,7 @@ class Planform:
     
     def calc_x_CG_Wing_struc(self):
         c_35 = 2 * self.area / ((1+self.taper) * self.span) * (1 - (1 - self.taper) / self.span * (2 * 0.35 * self.span / 2))
-        x_CG_wing_struc =  np.tan(self.sweep_LE) * (0.35 * self.span / 2) + (0.10 + 0.5 * 0.7) * c_35
+        x_CG_wing_struc =  np.tan(self.sweep_LE) * (0.35 * self.span / 2) + (0.10 + 0.55 * 0.7) * c_35
         return x_CG_wing_struc
     
     def calc_x_CG_engines_outer(self):
@@ -186,7 +190,7 @@ MinSweep = [min(idx) for idx in zip(*options)][0]
 
 # Inputs
 
-g = 0.4
+g = 0.35
 s = MinSweep
 Data = Planform(area,span,g,s)
 
@@ -218,6 +222,11 @@ point_15 = (width_payload/2, Data.x_CG + length_payload/2)
 point_16 = (-width_payload/2, Data.x_CG - length_payload/2)
 point_17 = (width_payload/2, Data.x_CG - length_payload/2)
 
+point_18 = (-width_battery/2, Data.x_CG - length_payload/2-0.005)
+point_19 = (-width_battery/2, Data.x_CG - length_payload/2 - length_battery -0.005)
+point_20 = (width_battery/2,Data.x_CG - length_payload/2 - length_battery-0.005)
+point_21 = (width_battery/2,Data.x_CG - length_payload/2-0.005)
+
 # Plot points
 
 wingplanform        = plt.figure()
@@ -227,22 +236,26 @@ points_quarterchord = [point_7,point_8,point_9]
 points_MAC_r        = [point_10,point_11]
 points_MAC_l        = [point_12,point_13]
 points_payload      = [point_14,point_15,point_17,point_16]
+points_battery      = [point_18,point_19,point_20,point_21]
 
 line_outline        = plt.Polygon(points_outline, closed=True, fill=None, edgecolor='r')
 line_quarterchord   = plt.Polygon(points_quarterchord, closed=None, fill=None, edgecolor='r')
 line_MAC_r          = plt.Polygon(points_MAC_r, closed=None, fill=None, edgecolor='b')
 line_MAC_l          = plt.Polygon(points_MAC_l, closed=None, fill=None, edgecolor='b')
 line_payload        = plt.Polygon(points_payload, closed=True, fill=None, edgecolor='r')
+line_battery        = plt.Polygon(points_battery, closed=True, fill=None, edgecolor='y')
 
 wingplanform.gca().add_line(line_MAC_r)
 wingplanform.gca().add_line(line_MAC_l)
 wingplanform.gca().add_line(line_outline)
 wingplanform.gca().add_line(line_quarterchord)
 wingplanform.gca().add_line(line_payload)
+wingplanform.gca().add_line(line_battery)
 
 ax.plot(0,Data.x_CG, 'ro')
 ax.plot(0,Data.x_NP, 'bo')
 ax.plot(0,Data.x_CG_wing_struc, 'go')
+ax.plot(0,x_CG_battery, 'yo')
 ax.plot(0.35*Data.span/2,Data.x_CG_engines_inner, 'rx')
 ax.plot(0.70*Data.span/2,Data.x_CG_engines_outer, 'rx')
 ax.plot(-0.35*Data.span/2,Data.x_CG_engines_inner, 'rx')
