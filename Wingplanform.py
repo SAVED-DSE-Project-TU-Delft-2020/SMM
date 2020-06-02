@@ -60,9 +60,12 @@ width_payload  = 0.268
 length_payload = 0.295 
 height_payload = 0.118
 
-width_battery = 0.195
-length_battery = 0.124
-height_battery = 0.084
+thickness_pack = 0.042
+width_pack = 0.082
+length_pack = 0.195
+width_battery = length_pack
+length_battery = thickness_pack+ width_pack
+height_battery = 2*thickness_pack
 
 # Surface Area
 
@@ -261,6 +264,56 @@ ax.plot(-0.35*Data.span/2,Data.x_CG_engines_inner, 'rx')
 ax.plot(-0.7*Data.span/2,Data.x_CG_engines_outer, 'rx')
 ax.axis('equal')
 ax.grid(True)
+
+
+"""Draw side view"""
+
+
+sideview = plt.figure()
+ax = sideview.add_subplot()
+
+#Payload
+
+point_22 = (Data.x_CG - length_payload/2, -height_payload/2)
+point_23 = (Data.x_CG - length_payload/2,+height_payload/2)
+point_24 = (Data.x_CG + length_payload/2,+height_payload/2)
+point_25 = (Data.x_CG + length_payload/2,-height_payload/2)
+
+
+
+#Battery
+
+point_26 = (Data.x_CG - length_payload/2-0.005,-thickness_pack)
+point_27 = (Data.x_CG - length_payload/2-0.005,thickness_pack)
+point_28 = (Data.x_CG - length_payload/2-width_pack-0.005,thickness_pack)
+point_29 = (Data.x_CG - length_payload/2-width_pack-0.005,width_pack/2)
+point_30 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.005,width_pack/2)
+point_31 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.005,-width_pack/2)
+point_32 = (Data.x_CG - length_payload/2-width_pack-0.005,-width_pack/2)
+point_33 = (Data.x_CG - length_payload/2-width_pack-0.005,-thickness_pack)
+
+
+print(Data.x_CG - length_payload/2-width_pack-thickness_pack-0.005)
+
+
+
+s_points_payload = [point_22,point_23, point_24, point_25]
+s_points_battery = [point_26,point_27, point_28, point_29,point_30,point_31,point_32,point_33]
+
+
+s_line_payload = plt.Polygon(s_points_payload,closed=True, fill=None, edgecolor='r')
+s_line_battery = plt.Polygon(s_points_battery,closed=True, fill=None, edgecolor='y')
+
+
+sideview.gca().add_line(s_line_payload)
+sideview.gca().add_line(s_line_battery)
+ax.axis('equal')
+ax.grid(True)
+
+
+
+
+
 
 plt.show()
 
