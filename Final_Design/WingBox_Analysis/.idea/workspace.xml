@@ -20,9 +20,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d6a687ad-88bb-4441-bc84-99887dd53366" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/CS_opt.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/compute_buckling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/CAL4014L_Points.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/CAL4014L_Points.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/CS_opt.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/CS_opt.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/Load_CS.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/Load_CS.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/NACA0012_Points.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/NACA0012_Points.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/compute_boom_areas.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/compute_boom_areas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/gather_points.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/gather_points.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/internal_loads.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/internal_loads.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../WingBoxAnalysis_v2/parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WingBoxAnalysis_v2/parameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -202,7 +207,7 @@
       <workItem from="1590948734154" duration="1056000" />
       <workItem from="1590955826309" duration="296000" />
       <workItem from="1591000891100" duration="10773000" />
-      <workItem from="1591011752857" duration="15403000" />
+      <workItem from="1591011752857" duration="15424000" />
     </task>
     <servers />
   </component>
@@ -230,28 +235,28 @@
       <screen x="1920" y="0" width="1920" height="1050" />
     </state>
     <state x="2660" y="280" key="FileChooserDialogImpl/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591019307854" />
-    <state width="1493" height="303" key="GridCell.Tab.0.bottom" timestamp="1591026229167">
+    <state width="1493" height="97" key="GridCell.Tab.0.bottom" timestamp="1591103537655">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="1493" height="303" key="GridCell.Tab.0.bottom/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591026229167" />
+    <state width="1493" height="97" key="GridCell.Tab.0.bottom/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591103537655" />
     <state width="1877" height="503" key="GridCell.Tab.0.bottom/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674819" />
     <state width="1877" height="351" key="GridCell.Tab.0.bottom/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
-    <state width="1493" height="303" key="GridCell.Tab.0.center" timestamp="1591026229167">
+    <state width="1493" height="97" key="GridCell.Tab.0.center" timestamp="1591103537655">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="1493" height="303" key="GridCell.Tab.0.center/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591026229167" />
+    <state width="1493" height="97" key="GridCell.Tab.0.center/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591103537655" />
     <state width="1877" height="503" key="GridCell.Tab.0.center/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674817" />
     <state width="1877" height="351" key="GridCell.Tab.0.center/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
-    <state width="1493" height="303" key="GridCell.Tab.0.left" timestamp="1591026229167">
+    <state width="1493" height="97" key="GridCell.Tab.0.left" timestamp="1591103537655">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="1493" height="303" key="GridCell.Tab.0.left/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591026229167" />
+    <state width="1493" height="97" key="GridCell.Tab.0.left/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591103537655" />
     <state width="1877" height="503" key="GridCell.Tab.0.left/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674816" />
     <state width="1877" height="351" key="GridCell.Tab.0.left/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
-    <state width="1493" height="303" key="GridCell.Tab.0.right" timestamp="1591026229167">
+    <state width="1493" height="97" key="GridCell.Tab.0.right" timestamp="1591103537655">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="1493" height="303" key="GridCell.Tab.0.right/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591026229167" />
+    <state width="1493" height="97" key="GridCell.Tab.0.right/0.0.1536.834/1920.0.1920.1050@0.0.1536.834" timestamp="1591103537655" />
     <state width="1877" height="503" key="GridCell.Tab.0.right/0.0.1536.834/1920.0.1920.1050@1920.0.1920.1050" timestamp="1591011674818" />
     <state width="1877" height="351" key="GridCell.Tab.0.right/0.0.1536.834@0.0.1536.834" timestamp="1590793797151" />
     <state width="1877" height="503" key="GridCell.Tab.1.bottom" timestamp="1591011674824">

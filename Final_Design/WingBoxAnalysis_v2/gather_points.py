@@ -1,3 +1,11 @@
+"""
+Author: Marco Desiderio
+
+When loading the points, be sure that none of the cross section points have the same location (e.g. you have 2 points
+for the leading edge), as this may lead to errors when slicing
+
+"""
+
 from openpyxl import load_workbook
 import numpy as np
 import scipy.interpolate as sp_interpolate
@@ -28,6 +36,7 @@ def gatherpoints(mesh, debug):
     else:
 
         wb = load_workbook(filename=r'CAL4014L_Points.xlsx')
+        # wb = load_workbook(filename=r'NACA0012_Points.xlsx')
         sheet = wb.worksheets[0]
         row_count = sheet.max_row  # count number of rows
         airfoil_points_x = []

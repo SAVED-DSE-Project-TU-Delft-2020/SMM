@@ -14,7 +14,7 @@ L_y = - sp_integrate.cumtrapz(external_loads.dL_dy_new(y_mesh), y_mesh, initial=
 w_final = external_loads.w_final * par.LF
 w_final = sp_interpolate.interp1d(external_loads.y, w_final)                     #Loads distribution interpolated
 S_y = sp_integrate.cumtrapz(w_final(y_mesh), y_mesh, initial=0)
-Mx_y = sp_integrate.cumtrapz(S_y, y_mesh, initial=0)                  ### BENDING MOMENT DISTRIBUTION
+Mx_y = - sp_integrate.cumtrapz(S_y, y_mesh, initial=0)                  ### BENDING MOMENT DISTRIBUTION
 
 indexes = np.linspace(par.segment_mesh,par.segment_mesh * par.N, par.N)
 indexes = np.ndarray.tolist(indexes)
