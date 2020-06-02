@@ -24,7 +24,8 @@ def Load_CS(mesh, debug, c_len, plotting, save_csfig, showplot, stiffeners):
         print('*************** DEBUG MODE IS ON ***************')
     if stiffeners:
         print('*************** PLACING STIFFENERS ***************')
-        # stiffeners_locs =
+        stiff_linecoord = par.stiffeners_index
+        stiffeners_size = par.stiffeners_size
 
     airfoil_points_x, airfoil_points_z = gather_points.gatherpoints(mesh, debug)
     airfoil_points_x = airfoil_points_x * c_len
@@ -42,7 +43,11 @@ def Load_CS(mesh, debug, c_len, plotting, save_csfig, showplot, stiffeners):
     airfoil_points_x = define_spars.cut_cs(airfoil_points_x, main_spar_loc, aft_spar_loc, debug)
     cs_areasloc_x, cs_areasloc_z, cs_areas_size, mesh_len,mainspar_min_z, mainspar_max_z, aftspar_min_z, aftspar_max_z = \
         compute_boom_areas.boomareas(airfoil_points_x, airfoil_points_z, mesh, par.t_sk, main_spar_A, aft_spar_A, main_spar_loc, aft_spar_loc, debug)
-
+    cs_areas_temp = cs_areas_size.copy()
+    if stiffeners:
+        print('placing_stiff')
+        cs_areas_size = stiffening.stiffen_CS(cs_areasloc_x, cs_areasloc_z, cs_areas_size, stiff_linecoord,stiffeners_size)
+    # print(cs_areas_size[stiff_linecoord[0]] - cs_areas_temp[stiff_linecoord[0]])
     x_bar, z_bar = CS.compute_centroid(cs_areasloc_x, cs_areasloc_z, cs_areas_size)
     print('x_bar = ', round(x_bar, 5), '         m')
     print('z_bar = ', round(z_bar, 5), '         m')

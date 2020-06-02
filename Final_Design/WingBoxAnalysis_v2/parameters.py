@@ -12,7 +12,7 @@ t_sp = 0.0010           #[m]
 
 b = 3                   #[m]
 S = 1.3                 #[m2]
-c_r = 0.760             #[m]
+c_r = 0.696             #[m]
 c_t = 2 * S / b - c_r   #[m]
 taper = c_t / c_r
 sweep_025 = 0 * np.pi / 180  #[deg]
@@ -20,12 +20,13 @@ h = (b/2) / (1 - taper) #height of triangle having root chord as a base and side
 ### System paramters
 MTOM = 17.80            #[kg]
 L_D = 20
-LF = 4 * 3 / 4
+LF =  3          #4
 
 print('Wingspan is:     ', b, '       m')
 print('Wing surface is: ', S, '     m2')
-print('Root chord is:   ', c_r, '    m')
+print('Root chord is:   ', c_r, '   m')
 print('Tip chord is:    ', round(c_t,4), '  m')
+print('Taper ratio is:  ', round(taper,3), '   -')
 print('MTOM is:         ', MTOM,    '    kg')
 print('L/D is:          ', L_D)
 print('LF is :          ', LF)
@@ -37,7 +38,9 @@ mainspar_cap_l = 0.040
 mainspar_cap_t = 0.001
 aftspar_cap_l = 0.040
 aftspar_cap_t = 0.001
-
+########
+stiffeners_index = np.array([280, 500, 1625])
+stiffeners_size = np.array([0.000045, 0.000045, 0.000045])
 ### Discretise each half-wing into N segments
 N = 10
 segment_mesh = 100
@@ -66,7 +69,7 @@ PAY_WIDTH = 0.268
 PAY_HEIGHT = 0.128
 
 #### ENGINE STUFF
-e1_loc = 0.5
-e2_loc = 1.0
+e1_loc = 0.35
+e2_loc = 0.7
 T1 = 100
 T2 = 100
