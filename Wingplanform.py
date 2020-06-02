@@ -181,7 +181,6 @@ for m in taperlist:
 #print(options)
 MinSweep = [min(idx) for idx in zip(*options)][0]
 
-
 ''' Draw Geometry '''
 
 # Inputs
@@ -249,6 +248,9 @@ ax.plot(-0.35*Data.span/2,Data.x_CG_engines_inner, 'rx')
 ax.plot(-0.7*Data.span/2,Data.x_CG_engines_outer, 'rx')
 ax.axis('equal')
 ax.grid(True)
+
+plt.show()
+
 
 
 
