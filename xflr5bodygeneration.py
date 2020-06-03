@@ -15,9 +15,7 @@ from matplotlib import pyplot as plt
 # Functions
 def generate_ellipses(points,filename):
     """"
-    points = 2D array of sideview points [[x,yleft,yright,ztop,zbottom]]
-    n = Number of sections the sideview is split in 
-    e = Eccentricity of the front view ellipse 
+    points = 2D array of sideview control points [[x,yleft,yright,ztop,zbottom]]
     filename = Name of the file to write the coordinates to 
     """ 
     file = open(filename,"w")
@@ -47,8 +45,6 @@ def generate_ellipses(points,filename):
             y_data.append(y)
             z_data.append(z)
             
-    
-        
         index_data = np.zeros(len(y_data))
         for k in range(len(index_data)):
             index_data[k] = points[i][0]
@@ -63,8 +59,9 @@ def generate_ellipses(points,filename):
         file.writelines(lines_end)
 
     file.close()
-        
+    
     return ellipse_data
+        
         
 # =============================================================================
 # Test
