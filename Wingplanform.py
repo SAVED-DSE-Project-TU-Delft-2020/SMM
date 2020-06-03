@@ -32,8 +32,10 @@ import matplotlib.pyplot as plt
 
 #Constraints Input values
 
-wing_loading   = 122                #[N/m] from P&P stall
-span           = 3                  #[m]
+wing_loading            = 122                #[N/m] from P&P stall
+span                    = 3                  #[m]
+tipover_angle           = 55                 #[deg]
+attachment_root_fin     = 0.10               #[m]
 
 #CG groups
 
@@ -94,16 +96,20 @@ class Planform:
         self.c_MAC         = self.calc_c_MAC()
         self.y_MAC         = self.calc_y_MAC()
         self.sweep_LE      = self.calc_sweep_LE()
+        self.l             = self.calc_l()
         
         #target parameters
-        
-        self.x_NP               = self.calc_x_NP()
-        self.x_CG_wing_struc    = self.calc_x_CG_Wing_struc()
-        self.x_CG_engines_outer = self.calc_x_CG_engines_outer()
-        self.x_CG_engines_inner = self.calc_x_CG_engines_inner()
-        self.x_CG_wing_group    = self.calc_x_CG_wing_group()
-        self.x_CG               = self.calc_x_CG()
-        self.SM                 = self.calc_SM()
+         
+        self.x_NP                 = self.calc_x_NP()
+        self.x_CG_wing_struc      = self.calc_x_CG_Wing_struc()
+        self.x_CG_engines_outer   = self.calc_x_CG_engines_outer()
+        self.x_CG_engines_inner   = self.calc_x_CG_engines_inner()
+        self.x_CG_wing_group      = self.calc_x_CG_wing_group()
+        self.x_CG                 = self.calc_x_CG()
+        self.SM                   = self.calc_SM()
+        self.landing_fin_semispan = self.calc_landing_fin_semispan()
+        self.c_root_fin           = self.calc_c_root_fin()
+        self.sweep_fin_LE         = self.calc_sweep_fin_LE()
         
     def calc_c_root(self):
         c_root = self.area * 2 / self.span / ( 1 + self.taper )  
@@ -159,6 +165,25 @@ class Planform:
         SM = ( self.x_NP - self.x_CG ) / self.c_MAC
         return SM
     
+    def calc_l(self):
+        l = (np.tan(self.sweep_LE) * self.span/2 + self.c_tip)
+        return l
+    
+    def calc_landing_fin_semispan(self):
+        phi = tipover_angle/180*np.pi
+        b = (self.l-self.x_CG) / np.tan(phi)
+        beta = np.arcsin(b/(self.span/2))
+        alpha = np.pi/2 - beta
+        landing_fin_semispan = b / np.sin(alpha)
+        return landing_fin_semispan
+    
+    def calc_c_root_fin(self):
+        c_root_fin = self.l - self.c_root + attachment_root_fin
+        return c_root_fin
+    
+    def calc_sweep_fin_LE(self):
+        sweep_LE_fin = np.arctan(self.c_root_fin/ self.landing_fin_semispan)
+        return sweep_LE_fin
     
 taperlist = np.arange(0.1,1,0.01)
 sweeplist = np.arange(0,25,0.1)   
