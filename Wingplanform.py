@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
     # Forward spar location at 10% of the Chord
     
-    # Aft spar location at 65% of the chord
+    # Aft spar location at 60% of the chord
     
     # Wing structural longitudinal CG lies at 70% of distance between main and aft spar at 35 % of the semiwingspan
     
@@ -40,7 +40,7 @@ span           = 3                  #[m]
 m_engine_inner = 0.4                #[kg]
 m_engine_outer = 0.4                #[kg]
 m_wing_struc   = 8.5                #[kg]
-m_avpase       = 0.836 - 0.5        #[kg] Avionics, Parachute and Sensors
+m_avpase       = 0.836         #[kg] Avionics, Parachute and Sensors
 m_battery      = 3.6                #[kg] Battery mass
 m_payload      = 3                  #[kg] Payload mass
 
@@ -148,7 +148,7 @@ class Planform:
     
     def calc_x_CG_Wing_struc(self):
         c_35 = 2 * self.area / ((1+self.taper) * self.span) * (1 - (1 - self.taper) / self.span * (2 * 0.35 * self.span / 2))
-        x_CG_wing_struc =  np.tan(self.sweep_LE) * (0.35 * self.span / 2) + (0.10 + 0.55 * 0.7) * c_35
+        x_CG_wing_struc =  np.tan(self.sweep_LE) * (0.35 * self.span / 2) + (0.10 + 0.5 * 0.7) * c_35
         return x_CG_wing_struc
     
     def calc_x_CG_engines_outer(self):
