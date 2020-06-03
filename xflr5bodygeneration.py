@@ -30,33 +30,54 @@ def generate_ellipses(points,filename):
     ellipse_data = [] 
     
     for i in range(n):
-        a = np.abs(points[i][1] - points[i][2])
-        b = np.abs(points[i][3] - points[i][4])
-        e = np.sqrt(1 - (b**2/a**2))
-        
-        theta = np.linspace(0,2*np.pi,67)
-        r = (a*(1-e**2))/(1-e*np.cos(theta))
-       
-        y_data = []
-        z_data = []
-        for j in range(len(theta)): 
-            y = r[j]*np.cos(theta[j])
-            z = r[j]*np.sin(theta[j])
-            y_data.append(y)
-            z_data.append(z)
+        if i == 0 or i == n - 1:
+            theta = np.linspace(0,2*np.pi,70)
             
-        index_data = np.zeros(len(y_data))
-        for k in range(len(index_data)):
-            index_data[k] = points[i][0]
-        ellipse_data.append([index_data,y_data,z_data])
+            y_data = []
+            z_data = []
+            index_data = []
+            for k in range(len(theta)): 
+                y_data.append(0)
+                z_data.append(0)
+                index_data.append(points[i][0])
+            ellipse_data.append([index_data,y_data,z_data])
+            
+            lines_frame = ["\nFRAME"]
+            file.writelines(lines_frame)
+            for i in range(len(index_data)):
+                line = ["\n",str(index_data[i]),"\t",str(y_data[i]),"\t",str(z_data[i])]
+                file.writelines(line)
+            lines_end = ["\n"]
+            file.writelines(lines_end)
         
-        lines_frame = ["\nFRAME"]
-        file.writelines(lines_frame)
-        for i in range(len(index_data)):
-            line = ["\n",str(index_data[i]),"\t",str(y_data[i]),"\t",str(z_data[i])]
-            file.writelines(line)
-        lines_end = ["\n"]
-        file.writelines(lines_end)
+        else:
+            a = np.abs(points[i][1] - points[i][2])
+            b = np.abs(points[i][3] - points[i][4])
+            e = np.sqrt(1 - (b**2/a**2))
+        
+            theta = np.linspace(0,2*np.pi,70)
+            r = (a*(1-e**2))/(1-e*np.cos(theta))
+       
+            y_data = []
+            z_data = []
+            for j in range(len(theta)): 
+                y = r[j]*np.cos(theta[j])
+                z = r[j]*np.sin(theta[j])
+                y_data.append(y)
+                z_data.append(z)
+            
+            index_data = np.zeros(len(y_data))
+            for k in range(len(index_data)):
+                index_data[k] = points[i][0]
+            ellipse_data.append([index_data,y_data,z_data])
+        
+            lines_frame = ["\nFRAME"]
+            file.writelines(lines_frame)
+            for i in range(len(index_data)):
+                line = ["\n",str(index_data[i]),"\t",str(y_data[i]),"\t",str(z_data[i])]
+                file.writelines(line)
+            lines_end = ["\n"]
+            file.writelines(lines_end)
 
     file.close()
     
