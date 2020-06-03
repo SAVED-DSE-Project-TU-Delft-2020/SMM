@@ -239,6 +239,9 @@ g = 0.35
 s = 20
 Data = Planform(area,span,g,s)
 
+print("Root chorr:", Data.c_root)
+print("Tip chord:", Data.c_tip)
+
 # Define points
 
 # Planform
