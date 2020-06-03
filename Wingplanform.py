@@ -77,6 +77,20 @@ height_lidar  =0.061
 
 area = m_total *9.80665 / wing_loading
 
+#Bulge Front constraints
+
+flattening = np.sqrt(2)
+
+
+semi_minor_pl = flattening * height_payload/2
+semi_major_pl = np.sqrt((width_payload/2)**2/(1-(height_payload/2)**2/semi_minor_pl**2))
+
+semi_minor_bat = flattening * height_battery/2
+semi_major_bat = np.sqrt((width_battery/2)**2/(1-(height_battery/2)**2/semi_minor_bat**2))
+
+semi_minor_lid = flattening * height_lidar/2
+semi_major_lid = np.sqrt((width_lidar/2)**2/(1-(height_lidar/2)**2/semi_minor_lid**2))
+
 
 class Planform:
     
@@ -217,7 +231,7 @@ for m in taperlist:
 #print(options)
 MinSweep = [min(idx) for idx in zip(*options)][0]
 
-''' Draw Geometry '''
+''' Draw Geometry (topview) '''
 
 # Inputs
 
@@ -253,10 +267,44 @@ point_15 = (width_payload/2, Data.x_CG + length_payload/2)
 point_16 = (-width_payload/2, Data.x_CG - length_payload/2)
 point_17 = (width_payload/2, Data.x_CG - length_payload/2)
 
+#bulge constraint
+point_pl2 = (-semi_major_pl, Data.x_CG - length_payload/2)
+point_pr2 = (semi_major_pl,Data.x_CG - length_payload/2)
+point_pr1 = (semi_major_pl,Data.x_CG + length_payload/2)
+point_pl1 = (-semi_major_pl,Data.x_CG + length_payload/2)
+
+
+#Battery
 point_18 = (-width_battery/2, Data.x_CG - length_payload/2-0.005)
 point_19 = (-width_battery/2, Data.x_CG - length_payload/2 - length_battery -0.005)
 point_20 = (width_battery/2,Data.x_CG - length_payload/2 - length_battery-0.005)
 point_21 = (width_battery/2,Data.x_CG - length_payload/2-0.005)
+
+#Lidar
+
+point_38 = (-width_lidar/2, Data.x_CG - length_payload/2-length_battery-0.01)
+point_39 = (-width_lidar/2, Data.x_CG - length_payload/2 - length_battery - length_lidar-0.01)
+point_40 = (width_lidar/2,Data.x_CG - length_payload/2 - length_battery-length_lidar-0.01)
+point_41 = (width_lidar/2, Data.x_CG - length_payload/2-length_battery-0.01)
+
+#nosecone
+a_nose_top  = semi_major_pl
+b_nose_top = np.sqrt((Data.x_CG - length_payload/2-width_pack-thickness_pack-length_lidar-0.01-(Data.x_CG - length_payload/2))**2/(1-(semi_minor_lid)**2/semi_minor_pl**2))
+
+
+x = np.linspace(-semi_major_pl,semi_major_pl,100)
+y = -np.sqrt((1-x**2/a_nose_top**2)*b_nose_top**2)+(Data.x_CG - length_payload/2)
+
+#tailcone
+point_tail = (0,Data.c_root)
+point_left = (-semi_major_pl,Data.x_CG + length_payload/2)
+point_right = (semi_major_pl,Data.x_CG + length_payload/2)
+
+
+
+
+
+
 
 # Plot points
 
@@ -267,14 +315,24 @@ points_quarterchord = [point_7,point_8,point_9]
 points_MAC_r        = [point_10,point_11]
 points_MAC_l        = [point_12,point_13]
 points_payload      = [point_14,point_15,point_17,point_16]
+points_bulge_pr = [point_pr1,point_pr2]
+points_bulge_pl = [point_pl1,point_pl2]
 points_battery      = [point_18,point_19,point_20,point_21]
+points_lidar        = [point_38,point_39,point_40,point_41]
+points_tail_left    = [point_tail,point_left]
+points_tail_right   = [point_tail,point_right]
 
 line_outline        = plt.Polygon(points_outline, closed=True, fill=None, edgecolor='r')
 line_quarterchord   = plt.Polygon(points_quarterchord, closed=None, fill=None, edgecolor='r')
 line_MAC_r          = plt.Polygon(points_MAC_r, closed=None, fill=None, edgecolor='b')
 line_MAC_l          = plt.Polygon(points_MAC_l, closed=None, fill=None, edgecolor='b')
 line_payload        = plt.Polygon(points_payload, closed=True, fill=None, edgecolor='r')
+line_bulge_pr = plt.Polygon(points_bulge_pr, closed=True, fill=None, edgecolor='r')
+line_bulge_pl = plt.Polygon(points_bulge_pl, closed=True, fill=None, edgecolor='r')
 line_battery        = plt.Polygon(points_battery, closed=True, fill=None, edgecolor='y')
+line_lidar          = plt.Polygon(points_lidar, closed=True, fill=None, edgecolor='g')
+line_tail_left      = plt.Polygon(points_tail_left, closed=True, fill=None, edgecolor='b')
+line_tail_right     =plt.Polygon(points_tail_right, closed=True, fill=None, edgecolor='b')
 
 wingplanform.gca().add_line(line_MAC_r)
 wingplanform.gca().add_line(line_MAC_l)
@@ -282,6 +340,11 @@ wingplanform.gca().add_line(line_outline)
 wingplanform.gca().add_line(line_quarterchord)
 wingplanform.gca().add_line(line_payload)
 wingplanform.gca().add_line(line_battery)
+wingplanform.gca().add_line(line_lidar)
+wingplanform.gca().add_line(line_bulge_pr)
+wingplanform.gca().add_line(line_bulge_pl)
+wingplanform.gca().add_line(line_tail_left)
+wingplanform.gca().add_line(line_tail_right)
 
 ax.plot(0,Data.x_CG, 'ro')
 ax.plot(0,Data.x_NP, 'bo')
@@ -291,6 +354,7 @@ ax.plot(0.35*Data.span/2,Data.x_CG_engines_inner, 'rx')
 ax.plot(0.70*Data.span/2,Data.x_CG_engines_outer, 'rx')
 ax.plot(-0.35*Data.span/2,Data.x_CG_engines_inner, 'rx')
 ax.plot(-0.7*Data.span/2,Data.x_CG_engines_outer, 'rx')
+ax.plot(x,y)
 ax.axis('equal')
 ax.grid(True)
 
@@ -307,6 +371,12 @@ point_22 = (Data.x_CG - length_payload/2, -height_payload/2)
 point_23 = (Data.x_CG - length_payload/2,+height_payload/2)
 point_24 = (Data.x_CG + length_payload/2,+height_payload/2)
 point_25 = (Data.x_CG + length_payload/2,-height_payload/2)
+
+#bulge constraint
+point_pb2 = (Data.x_CG - length_payload/2, -semi_minor_pl)
+point_pt2 = (Data.x_CG - length_payload/2,semi_minor_pl)
+point_pt1 = (Data.x_CG + length_payload/2,semi_minor_pl)
+point_pb1 = (Data.x_CG + length_payload/2,-semi_minor_pl)
 
 
 
@@ -329,34 +399,210 @@ point_35 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-length_lidar-
 point_36 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-length_lidar-0.01,-height_lidar/2)
 point_37 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.01,-height_lidar/2)
 
+#bulge constraint
+point_lt1 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.01, +semi_minor_lid)
+point_lb2 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-length_lidar-0.01,-semi_minor_lid)
+point_lt2 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-length_lidar-0.01,semi_minor_lid)
+point_lb1 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.01,-semi_minor_lid)
+
+
+
+#nosecone
+
+b_nose_side = semi_minor_pl
+a_nose_side  = b_nose_top
+
+x = np.linspace(point_pt2[0]-a_nose_side,point_pt2[0],100)
+s_y_top = np.sqrt(b_nose_side**2*(1-(x-point_pt2[0])**2/a_nose_side**2))
+s_y_bottom = -np.sqrt(b_nose_side**2*(1-(x-point_pt2[0])**2/a_nose_side**2))
+
+#tailcone
+point_tail = (Data.c_root,0)
+point_top = (Data.x_CG + length_payload/2,semi_minor_pl)
+point_bottom = (Data.x_CG + length_payload/2,-semi_minor_pl)
+
+
+
 
 s_points_payload = [point_22,point_23, point_24, point_25]
+s_points_bulge_pt = [point_pt1,point_pt2]
+s_points_bulge_pl = [point_pb1,point_pb2]
 s_points_battery = [point_26,point_27, point_28, point_29,point_30,point_31,point_32,point_33]
-s_points_lidar  = [point_34,point_35,point_36,point_37]
+s_points_lidar = [point_34,point_35,point_36,point_37]
+s_points_bulge_lt = [point_lt1,point_lt2]
+s_points_bulge_lb = [point_lb1,point_lb2]
+s_points_tail_top = [point_top,point_tail]
+s_points_tail_bottom = [point_bottom,point_tail]
 
 s_line_payload = plt.Polygon(s_points_payload,closed=True, fill=None, edgecolor='r')
+s_line_bulge_pt = plt.Polygon(s_points_bulge_pt,closed=True, fill=None, edgecolor='r')
+s_line_bulge_pl = plt.Polygon(s_points_bulge_pl,closed=True, fill=None, edgecolor='r')
 s_line_battery = plt.Polygon(s_points_battery,closed=True, fill=None, edgecolor='y')
 s_line_lidar = plt.Polygon(s_points_lidar,closed=True, fill=None, edgecolor='g')
+s_line_bulge_lt = plt.Polygon(s_points_bulge_lt,closed=True, fill=None, edgecolor='g')
+s_line_bulge_ll = plt.Polygon(s_points_bulge_lb,closed=True, fill=None, edgecolor='g')
+s_line_tail_top = plt.Polygon(s_points_tail_top,closed=True, fill=None, edgecolor='b')
+s_line_tail_bottom = plt.Polygon(s_points_tail_bottom,closed=True, fill=None, edgecolor='b')
 
 
 sideview.gca().add_line(s_line_payload)
+sideview.gca().add_line(s_line_bulge_pt)
+sideview.gca().add_line(s_line_bulge_pl)
 sideview.gca().add_line(s_line_battery)
 sideview.gca().add_line(s_line_lidar)
+#sideview.gca().add_line(s_line_bulge_lt)
+#sideview.gca().add_line(s_line_bulge_ll)
+sideview.gca().add_line(s_line_tail_bottom)
+sideview.gca().add_line(s_line_tail_top)
+ax.plot(x,s_y_top)
+ax.plot(x,s_y_bottom)
 ax.axis('equal')
 ax.grid(True)
 
 
+"""Frontview"""
+frontview = plt.figure()
+ax = frontview.add_subplot()
+
+#Payload
+
+point_38 = (- width_payload/2, -height_payload/2)
+point_39 = ( - width_payload/2,+height_payload/2)
+point_40 = (width_payload/2,+height_payload/2)
+point_41 = (width_payload/2,-height_payload/2)
+
+#bulge
+
+x = np.linspace(-semi_major_pl,semi_major_pl,100)
+y_top = np.sqrt(semi_minor_pl**2*(1-x**2/semi_major_pl**2))
+y_bottom = -np.sqrt(semi_minor_pl**2*(1-x**2/semi_major_pl**2))
+
+#Lidar
+#
+# point_34 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.01,height_lidar/2)
+# point_35 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-length_lidar-0.01,height_lidar/2)
+# point_36 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-length_lidar-0.01,-height_lidar/2)
+# point_37 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.01,-height_lidar/2)
+
+
+f_points_payload = [point_38,point_39, point_40, point_41]
+
+f_line_payload = plt.Polygon(f_points_payload,closed=True, fill=None, edgecolor='r')
 
 
 
+frontview.gca().add_line(f_line_payload)
 
-plt.show()
+ax.axis('equal')
+ax.plot(x,y_top)
+ax.plot(x,y_bottom)
+ax.grid(True)
+
+#plt.show()
 
 
 
+""""CONTROL POINT DEFINITION"""
 
 
+N = 100
 
+xs = np.linspace(Data.x_CG - length_payload/2-a_nose_side,Data.c_root,N)
+
+control_points = []
+for x in xs:
+    if x<(Data.x_CG - length_payload/2):
+        h1 = Data.x_CG - length_payload/2
+        y_left = -np.sqrt((1-(x-h1)**2/b_nose_top**2)*a_nose_top**2)
+        y_right= +np.sqrt((1-(x-h1)**2/b_nose_top**2)*a_nose_top**2)
+        z_top = np.sqrt(b_nose_side**2*(1-(x-h1)**2/a_nose_side**2))
+        z_bottom = -np.sqrt(b_nose_side**2*(1-(x-h1)**2/a_nose_side**2))
+    elif (Data.x_CG - length_payload/2)  <=  x  <  (Data.x_CG + length_payload/2):
+        y_left = -a_nose_top
+        y_right = a_nose_top
+        z_top  = b_nose_side
+        z_bottom = -b_nose_side
+    else:
+        h2 = Data.x_CG + length_payload/2
+        y_left  = -a_nose_top+(x-h2)*a_nose_top/(Data.c_root-h2)
+        y_right =a_nose_top-(x-h2)*a_nose_top/(Data.c_root-h2)
+        z_top   =  b_nose_side - (x-h2)*b_nose_side/(Data.c_root-h2)
+        z_bottom =  -b_nose_side +(x-h2)*b_nose_side/(Data.c_root-h2)
+    control_points.append([x,y_left,y_right,z_top,z_bottom])
+    
+def generate_ellipses(points,filename):
+    """"
+    points = 2D array of sideview control points [[x,yleft,yright,ztop,zbottom]]
+    filename = Name of the file to write the coordinates to 
+    """ 
+    file = open(filename,"w")
+    file.close()
+    
+    file = open(str(filename)+".txt","w")
+    lines_start = ["BODYTYPE","\n","1","\nOFFSET","\n","0","\t","0","\t","0"]
+    file.writelines(lines_start)
+
+    n = len(points)
+    
+    ellipse_data = [] 
+    
+    for i in range(n):
+        if i == 0 or i == n - 1:
+            theta = np.linspace(0,2*np.pi,70)
+            
+            y_data = []
+            z_data = []
+            index_data = []
+            for k in range(len(theta)): 
+                y_data.append(0)
+                z_data.append(0)
+                index_data.append(points[i][0])
+            ellipse_data.append([index_data,y_data,z_data])
+            
+            lines_frame = ["\nFRAME"]
+            file.writelines(lines_frame)
+            for i in range(len(index_data)):
+                line = ["\n",str(index_data[i]),"\t",str(y_data[i]),"\t",str(z_data[i])]
+                file.writelines(line)
+            lines_end = ["\n"]
+            file.writelines(lines_end)
+        
+        else:
+            a = np.abs(points[i][1] - points[i][2])
+            b = np.abs(points[i][3] - points[i][4])
+            e = np.sqrt(1 - (b**2/a**2))
+        
+            theta = np.linspace(0,2*np.pi,70)
+            r = (a*(1-e**2))/(1-e*np.cos(theta))
+       
+            y_data = []
+            z_data = []
+            for j in range(len(theta)): 
+                y = r[j]*np.cos(theta[j])
+                z = r[j]*np.sin(theta[j])
+                y_data.append(y)
+                z_data.append(z)
+            
+            index_data = np.zeros(len(y_data))
+            for k in range(len(index_data)):
+                index_data[k] = points[i][0]
+            ellipse_data.append([index_data,y_data,z_data])
+        
+            lines_frame = ["\nFRAME"]
+            file.writelines(lines_frame)
+            for i in range(len(index_data)):
+                line = ["\n",str(index_data[i]),"\t",str(y_data[i]),"\t",str(z_data[i])]
+                file.writelines(line)
+            lines_end = ["\n"]
+            file.writelines(lines_end)
+
+    file.close()
+    
+    return ellipse_data
+
+ellipse_data = generate_ellipses(control_points,"body")
+
+plt.plot(ellipse_data[10][1],ellipse_data[10][2])
 
 
 
