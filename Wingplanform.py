@@ -239,6 +239,9 @@ g = 0.35
 s = 20
 Data = Planform(area,span,g,s)
 
+print("Root chorr:", Data.c_root)
+print("Tip chord:", Data.c_tip)
+
 # Define points
 
 # Planform
@@ -372,6 +375,7 @@ point_23 = (Data.x_CG - length_payload/2,+height_payload/2)
 point_24 = (Data.x_CG + length_payload/2,+height_payload/2)
 point_25 = (Data.x_CG + length_payload/2,-height_payload/2)
 
+
 #bulge constraint
 point_pb2 = (Data.x_CG - length_payload/2, -semi_minor_pl)
 point_pt2 = (Data.x_CG - length_payload/2,semi_minor_pl)
@@ -390,6 +394,11 @@ point_30 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.005,width_p
 point_31 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.005,-width_pack/2)
 point_32 = (Data.x_CG - length_payload/2-width_pack-0.005,-width_pack/2)
 point_33 = (Data.x_CG - length_payload/2-width_pack-0.005,-thickness_pack)
+
+print("Actual battery c.g.:", Data.x_CG - length_payload/2-width_pack/2-thickness_pack/2-0.005 )
+print("Payload c.g.: ", Data.x_CG)
+print("outer engine: ", Data.x_CG_engines_outer)
+print("inner engine: ", Data.x_CG_engines_inner)
 
 
 #Lidar
