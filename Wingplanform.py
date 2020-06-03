@@ -548,15 +548,24 @@ def generate_ellipses(points,filename):
             e = np.sqrt(1 - (b**2/a**2))
         
             theta = np.linspace(0,2*np.pi,70)
-            r = (a*(1-e**2))/(1-e*np.cos(theta))
-       
-            y_data = []
-            z_data = []
-            for j in range(len(theta)): 
-                y = r[j]*np.cos(theta[j])
-                z = r[j]*np.sin(theta[j])
-                y_data.append(y)
-                z_data.append(z)
+
+            #r = (a*(1-e**2))/(1-e*np.cos(theta))
+            r = a*b/np.sqrt(a**2*np.sin(theta)**2+b**2*np.cos(theta)**2)
+
+
+            y_data = r*np.cos(theta)
+            z_data = r*np.sin(theta)
+
+            
+
+            # y_data = []
+            # z_data = []
+            # for j in range(len(theta)):
+            #     y = r[j]*np.cos(theta[j])
+            #     z = r[j]*np.sin(theta[j])
+            #     y_data.append(y)
+            #     z_data.append(z)
+
             
             index_data = np.zeros(len(y_data))
             for k in range(len(index_data)):
