@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 
 #Constraints Input values
 
-wing_loading            = 128.5                #[N/m] from P&P stall
+wing_loading            = 128.5              #[N/m] from P&P stall
 span                    = 3                  #[m]
 tipover_angle           = 55                 #[deg]
 attachment_root_fin     = 0.15               #[m]
@@ -41,22 +41,24 @@ attachment_root_fin     = 0.15               #[m]
 
 m_engine_inner = 0.4                #[kg]
 m_engine_outer = 0.4                #[kg]
-m_wing_struc   = 8.5                #[kg]
-m_avpase       = 0.836         #[kg] Avionics, Parachute and Sensors
+m_wing_struc   = 8.2                #[kg]
+m_avpase       = 0.836              #[kg] Avionics, Parachute and Sensors
 m_battery      = 3.6                #[kg] Battery mass
 m_payload      = 3                  #[kg] Payload mass
+m_fin          = 0.5                #[kg]
 
-x_CG_battery   = 0.1               #[m]
+x_CG_battery   = 0.1                #[m]
 x_CG_avpase    = 0.35               #[m]
+gues_x_CG_fin  = 0.65               #[m]
+
 
 x_CG_without_wing_group = (x_CG_battery * m_battery + x_CG_avpase * m_avpase) / (m_battery+m_avpase)
 m_without_wing_group    = m_battery+m_avpase
 
-m_wing_group   = 2* m_engine_inner + 2 * m_engine_outer + m_wing_struc
+m_wing_group   = 2* m_engine_inner + 2 * m_engine_outer + m_wing_struc + m_fin
 
-m_total = m_wing_group + m_without_wing_group + m_payload
+m_total = m_wing_group + m_without_wing_group + m_payload 
 
-print("Total mass is:", m_total)
 # Subsystem dimensions
 
 width_payload  = 0.268
@@ -113,6 +115,7 @@ class Planform:
         self.sweep_LE      = self.calc_sweep_LE()
         self.l             = self.calc_l()
         
+        
         #target parameters
          
         self.x_NP                 = self.calc_x_NP()
@@ -125,6 +128,7 @@ class Planform:
         self.landing_fin_semispan = self.calc_landing_fin_semispan()
         self.c_root_fin           = self.calc_c_root_fin()
         self.sweep_fin_LE         = self.calc_sweep_fin_LE()
+        self.x_CG_fin             = self.calc_x_CG_fin()
         
     def calc_c_root(self):
         c_root = self.area * 2 / self.span / ( 1 + self.taper )  
@@ -167,9 +171,9 @@ class Planform:
         a = 0 # def extra c.g. in case engines stick out of the wing
         x_CG_engines_inner = np.tan(self.sweep_LE) * 0.35 * ( self.span / 2) + a
         return x_CG_engines_inner
-    
+
     def calc_x_CG_wing_group(self):
-        x_CG_wing_group = (self.x_CG_wing_struc * m_wing_struc + 2*(self.x_CG_engines_outer*m_engine_outer) + 2*(self.x_CG_engines_inner*m_engine_inner)) / (m_wing_struc+2*m_engine_outer+2*m_engine_inner)
+        x_CG_wing_group = (gues_x_CG_fin*m_fin + self.x_CG_wing_struc * m_wing_struc + 2*(self.x_CG_engines_outer*m_engine_outer) + 2*(self.x_CG_engines_inner*m_engine_inner)) / (m_wing_group)
         return x_CG_wing_group
         
     def calc_x_CG(self):
@@ -199,6 +203,13 @@ class Planform:
     def calc_sweep_fin_LE(self):
         sweep_LE_fin = np.arctan(self.c_root_fin/ self.landing_fin_semispan)
         return sweep_LE_fin
+
+    def calc_x_CG_fin(self):
+        a = 0.35 # input for centroid as function of total longitudinal length
+        x_CG_fin = self.c_root - attachment_root_fin + self.c_root_fin * a
+        return x_CG_fin
+    
+    
     
 taperlist = np.arange(0.1,1,0.01)
 sweeplist = np.arange(0,25,0.1)   
@@ -225,7 +236,7 @@ for m in taperlist:
         if Data.SM > 0.175 and Data.SM < 0.176:
             ax.plot(m,n,'bo', markersize=1)
             #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
-        if Data.SM > 0.100 and Data.SM < 0.101:
+        if Data.SM > 0.200 and Data.SM < 0.201:
             ax.plot(m,n,'ko', markersize=1)
             #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
 
@@ -237,7 +248,7 @@ MinSweep = [min(idx) for idx in zip(*options)][0]
 # Inputs
 
 g = 0.35
-s = MinSweep
+s = 20
 Data = Planform(area,span,g,s)
 
 print("Root chorr:", Data.c_root)
@@ -396,6 +407,9 @@ point_31 = (Data.x_CG - length_payload/2-width_pack-thickness_pack-0.005,-width_
 point_32 = (Data.x_CG - length_payload/2-width_pack-0.005,-width_pack/2)
 point_33 = (Data.x_CG - length_payload/2-width_pack-0.005,-thickness_pack)
 
+print("Input Fin c.g.:", gues_x_CG_fin)
+print("Actual Fin c.g.:", Data.x_CG_fin)
+print("Input battery c.g.:", x_CG_battery)
 print("Actual battery c.g.:", Data.x_CG - length_payload/2-width_pack/2-thickness_pack/2-0.005 )
 print("Payload c.g.: ", Data.x_CG)
 print("outer engine: ", Data.x_CG_engines_outer)
@@ -508,7 +522,7 @@ ax.plot(x,y_top)
 ax.plot(x,y_bottom)
 ax.grid(True)
 
-plt.show()
+#plt.show()
 
 
 
@@ -518,9 +532,6 @@ plt.show()
 N = 100
 
 xs = np.linspace(Data.x_CG - length_payload/2-a_nose_side,Data.c_root,N)
-print("Length bulge:", Data.c_root-(Data.x_CG - length_payload/2-a_nose_side))
-print("Width bulge:", 2*a_nose_top,2*semi_major_pl)
-print("Height bulge:", 2*semi_minor_pl)
 
 control_points = []
 for x in xs:
@@ -615,16 +626,7 @@ plt.plot(ellipse_data[10][1],ellipse_data[10][2])
 
 
 
-"""""For sound tool"""
 
-
-print("Point 1:",point_1[1],-point_1[0])
-print("Point 2:",point_2[1],-point_2[0])
-print("Point 3:",point_3[1],-point_3[0])
-print("Point 4:",point_4[1],-point_4[0])
-print("Point 5:",point_5[1],-point_5[0])
-print("Point 6:",point_6[1],-point_6[0])
-print
 
 
 
