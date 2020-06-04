@@ -56,6 +56,7 @@ m_wing_group   = 2* m_engine_inner + 2 * m_engine_outer + m_wing_struc
 
 m_total = m_wing_group + m_without_wing_group + m_payload
 
+print("Total mass is:", m_total)
 # Subsystem dimensions
 
 width_payload  = 0.268
@@ -507,7 +508,7 @@ ax.plot(x,y_top)
 ax.plot(x,y_bottom)
 ax.grid(True)
 
-#plt.show()
+plt.show()
 
 
 
@@ -517,6 +518,9 @@ ax.grid(True)
 N = 100
 
 xs = np.linspace(Data.x_CG - length_payload/2-a_nose_side,Data.c_root,N)
+print("Length bulge:", Data.c_root-(Data.x_CG - length_payload/2-a_nose_side))
+print("Width bulge:", 2*a_nose_top,2*semi_major_pl)
+print("Height bulge:", 2*semi_minor_pl)
 
 control_points = []
 for x in xs:
@@ -611,7 +615,16 @@ plt.plot(ellipse_data[10][1],ellipse_data[10][2])
 
 
 
+"""""For sound tool"""
 
+
+print("Point 1:",point_1[1],-point_1[0])
+print("Point 2:",point_2[1],-point_2[0])
+print("Point 3:",point_3[1],-point_3[0])
+print("Point 4:",point_4[1],-point_4[0])
+print("Point 5:",point_5[1],-point_5[0])
+print("Point 6:",point_6[1],-point_6[0])
+print
 
 
 
