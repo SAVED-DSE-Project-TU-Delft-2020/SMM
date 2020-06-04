@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
     # Forward spar location at 10% of the Chord
     
-    # Aft spar location at 60% of the chord
+    # Aft spar location at 65% of the chord
     
     # Wing structural longitudinal CG lies at 70% of distance between main and aft spar at 35 % of the semiwingspan
     
@@ -32,10 +32,10 @@ import matplotlib.pyplot as plt
 
 #Constraints Input values
 
-wing_loading            = 122                #[N/m] from P&P stall
+wing_loading            = 128.5                #[N/m] from P&P stall
 span                    = 3                  #[m]
 tipover_angle           = 55                 #[deg]
-attachment_root_fin     = 0.10               #[m]
+attachment_root_fin     = 0.15               #[m]
 
 #CG groups
 
@@ -154,7 +154,7 @@ class Planform:
     
     def calc_x_CG_Wing_struc(self):
         c_35 = 2 * self.area / ((1+self.taper) * self.span) * (1 - (1 - self.taper) / self.span * (2 * 0.35 * self.span / 2))
-        x_CG_wing_struc =  np.tan(self.sweep_LE) * (0.35 * self.span / 2) + (0.10 + 0.5 * 0.7) * c_35
+        x_CG_wing_struc =  np.tan(self.sweep_LE) * (0.35 * self.span / 2) + (0.10 + 0.55 * 0.7) * c_35
         return x_CG_wing_struc
     
     def calc_x_CG_engines_outer(self):
@@ -217,14 +217,14 @@ options = []
 for m in taperlist:
     for n in sweeplist:
         Data = Planform(area,span,m,n)
-        if Data.SM > 0.200 and Data.SM < 0.201:
+        if Data.SM > 0.100 and Data.SM < 0.101:
             ax.plot(m,n,'ro', markersize=1)
             options.append([round(n,3),round(m,3)])
             #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
         if Data.SM > 0.175 and Data.SM < 0.176:
             ax.plot(m,n,'bo', markersize=1)
             #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
-        if Data.SM > 0.150 and Data.SM < 0.151:
+        if Data.SM > 0.100 and Data.SM < 0.101:
             ax.plot(m,n,'ko', markersize=1)
             #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
 
@@ -236,7 +236,7 @@ MinSweep = [min(idx) for idx in zip(*options)][0]
 # Inputs
 
 g = 0.35
-s = 20
+s = MinSweep
 Data = Planform(area,span,g,s)
 
 print("Root chorr:", Data.c_root)
