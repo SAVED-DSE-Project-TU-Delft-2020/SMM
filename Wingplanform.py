@@ -615,7 +615,16 @@ plt.plot(ellipse_data[10][1],ellipse_data[10][2])
 
 
 
+"""""For sound tool"""
 
+
+print("Point 1:",point_1[1],-point_1[0])
+print("Point 2:",point_2[1],-point_2[0])
+print("Point 3:",point_3[1],-point_3[0])
+print("Point 4:",point_4[1],-point_4[0])
+print("Point 5:",point_5[1],-point_5[0])
+print("Point 6:",point_6[1],-point_6[0])
+print
 
 
 
