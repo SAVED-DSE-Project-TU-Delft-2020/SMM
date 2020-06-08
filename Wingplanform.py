@@ -211,6 +211,7 @@ class Planform:
     
     
     
+    
 taperlist = np.arange(0.1,1,0.01)
 sweeplist = np.arange(0,25,0.1)   
 
@@ -623,7 +624,15 @@ ellipse_data = generate_ellipses(control_points,"body")
 
 plt.plot(ellipse_data[10][1],ellipse_data[10][2])
 
+### Semi-empirical twist estimation method
+        
+CL_design = 0.3 #0.28-0.35
 
+beta_required  = 19 *(CL_design/1)*(0.075/0.1)
+beta_cm        = 11 *(0.018/0.05)
+alpha_morphing = 0 #no airfoil morphing (aerodynamic twist)
+
+beta = beta_required - beta_cm - alpha_morphing        
 
 
 
