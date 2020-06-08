@@ -41,7 +41,7 @@ attachment_root_fin     = 0.15               #[m]
 
 m_engine_inner = 0.4                #[kg]
 m_engine_outer = 0.4                #[kg]
-m_wing_struc   = 8.2                #[kg]
+m_wing_struc   = 8                  #[kg]
 m_avpase       = 0.836              #[kg] Avionics, Parachute and Sensors
 m_battery      = 3.6                #[kg] Battery mass
 m_payload      = 3                  #[kg] Payload mass
@@ -58,7 +58,7 @@ m_without_wing_group    = m_battery+m_avpase
 m_wing_group   = 2* m_engine_inner + 2 * m_engine_outer + m_wing_struc + m_fin
 
 m_total = m_wing_group + m_without_wing_group + m_payload 
-
+print(m_total)
 # Subsystem dimensions
 
 width_payload  = 0.268
@@ -412,7 +412,9 @@ print("Input Fin c.g.:", gues_x_CG_fin)
 print("Actual Fin c.g.:", Data.x_CG_fin)
 print("Input battery c.g.:", x_CG_battery)
 print("Actual battery c.g.:", Data.x_CG - length_payload/2-width_pack/2-thickness_pack/2-0.005 )
+
 print("Payload c.g.: ", Data.x_CG)
+
 print("outer engine: ", Data.x_CG_engines_outer)
 print("inner engine: ", Data.x_CG_engines_inner)
 
@@ -523,7 +525,7 @@ ax.plot(x,y_top)
 ax.plot(x,y_bottom)
 ax.grid(True)
 
-#plt.show()
+plt.show()
 
 
 
