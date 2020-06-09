@@ -254,6 +254,7 @@ Data = Planform(area,span,g,s)
 
 print("Root chorr:", Data.c_root)
 print("Tip chord:", Data.c_tip)
+print("MAC:", Data.c_MAC)
 
 # Define points
 
