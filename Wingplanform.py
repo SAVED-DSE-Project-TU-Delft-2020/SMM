@@ -39,15 +39,9 @@ attachment_root_fin     = 0.15               #[m]
 
 #CG groups
 
-<<<<<<< HEAD
-m_engine_inner = 0.38               #[kg]
-m_engine_outer = 0.38               #[kg]
+m_engine_inner = 0.3781             #[kg]
+m_engine_outer = 0.3781             #[kg]
 m_wing_struc   = 8.0                #[kg]
-=======
-m_engine_inner = 0.4                #[kg]
-m_engine_outer = 0.4                #[kg]
-m_wing_struc   = 8                  #[kg]
->>>>>>> 3ea594202613463d81207494353d7ad451ed11ab
 m_avpase       = 0.836              #[kg] Avionics, Parachute and Sensors
 m_battery      = 3.6                #[kg] Battery mass
 m_payload      = 3                  #[kg] Payload mass
