@@ -39,16 +39,16 @@ attachment_root_fin     = 0.15               #[m]
 
 #CG groups
 
-m_engine_inner = 0.4                #[kg]
-m_engine_outer = 0.4                #[kg]
-m_wing_struc   = 8.2                #[kg]
+m_engine_inner = 0.38               #[kg]
+m_engine_outer = 0.38               #[kg]
+m_wing_struc   = 8.0                #[kg]
 m_avpase       = 0.836              #[kg] Avionics, Parachute and Sensors
 m_battery      = 3.6                #[kg] Battery mass
 m_payload      = 3                  #[kg] Payload mass
 m_fin          = 0.5                #[kg]
 
-x_CG_battery   = 0.1                #[m]
-x_CG_avpase    = 0.35               #[m]
+x_CG_battery   = 0.10                #[m]
+x_CG_avpase    = 0.5                #[m]
 gues_x_CG_fin  = 0.65               #[m]
 
 
@@ -626,9 +626,9 @@ plt.plot(ellipse_data[10][1],ellipse_data[10][2])
 
 ### Semi-empirical twist estimation method
         
-CL_design = 0.3 #0.28-0.35
+CL_design = 0.4 #0.28-0.35
 
-beta_required  = 19 *(CL_design/1)*(0.075/0.1)
+beta_required  = 19 *(CL_design/1)*(0.06/0.1)
 beta_cm        = 11 *(0.018/0.05)
 alpha_morphing = 0 #no airfoil morphing (aerodynamic twist)
 
