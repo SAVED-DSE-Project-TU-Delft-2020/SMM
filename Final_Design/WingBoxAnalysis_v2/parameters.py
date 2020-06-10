@@ -5,14 +5,14 @@ Parameters file for the wing box analysis
 import numpy as np
 print('=========== LOADING DRONE PARAMETERS ===========')
 ### Cross-seciton parameters
-t_sk = 0.001           #[m]
+t_sk = 0.0005           #[m]
 t_sp = 0.0010           #[m]
 
 ### Wing geometry parameters
 
 b = 3                   #[m]
-S = 1.3                 #[m2]
-c_r = 0.696             #[m]
+S = 1.35355                 #[m2]
+c_r = 0.668             #[m]
 c_t = 2 * S / b - c_r   #[m]
 taper = c_t / c_r
 sweep_025 = 0 * np.pi / 180  #[deg]
@@ -32,15 +32,17 @@ print('L/D is:          ', L_D)
 print('LF is :          ', LF)
 
 ####### STRUCTURAL PARAMETERS ########
-main_spar_loc = 0.075
-aft_spar_loc = 0.75
-mainspar_cap_l = 0.040
-mainspar_cap_t = 0.001
-aftspar_cap_l = 0.040
-aftspar_cap_t = 0.001
+main_spar_loc = 0.0001
+aft_spar_loc = 0.999
+mainspar_cap_l = 0.00
+mainspar_cap_t = 0.00
+aftspar_cap_l = 0.020 * 0
+aftspar_cap_t = 0.001 * 0
 ########
-stiffeners_index = np.array([280, 500, 1625])
-stiffeners_size = np.array([0.000045, 0.000045, 0.000045])
+# stiffeners_index = np.array([100, 200, 300, 400, 500, 1625, 1800])
+# stiffeners_size = np.array([0.000045, 0.000045, 0.000045, 0.000045, 0.000045, 0.000045, 0.000045]) / 1.5
+stiffeners_index = np.array([120, 250, 385, 530, 675, 1580, 1780])
+stiffeners_size = np.array([0.000045, 0.000045, 0.000045, 0.000045, 0.000045, 0.000045, 0.000045]) / 1.5
 ### Discretise each half-wing into N segments
 N = 10
 segment_mesh = 100

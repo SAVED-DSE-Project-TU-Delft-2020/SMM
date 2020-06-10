@@ -5,6 +5,8 @@ import scipy.integrate as sp_integrate
 import  scipy.interpolate as sp_interpolate
 import matplotlib.pyplot as plt
 import functions as f
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 
 
 debug = False
@@ -21,12 +23,14 @@ indexes = np.ndarray.tolist(indexes)
 
 Sz_array = np.array([])
 Mx_array = np.array([])
+
 for i in indexes:
     i = int(i)
     Sz_array = np.append(Sz_array, S_y[i-1])
     Mx_array = np.append(Mx_array, Mx_y[i-1])
 
-
+print(Mx_y)
+print(y_mesh)
 ## change this later once we get the data
 D_y = L_y / par.L_D
 e1_index = f.find_nearest(y_mesh, par.b /2 - par.e1_loc)
@@ -40,6 +44,7 @@ for i in indexes:
     i = int(i)
     Sx_array = np.append(Sx_array, D_y[i-1])
     Mz_array = np.append(Mz_array, Mz_y[i-1])
+
 
 
 if debug:

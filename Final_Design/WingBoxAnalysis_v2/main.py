@@ -143,7 +143,8 @@ if solve:
     sigma_yy_arr = sigma_yy_arr[1:,:]
     q_tot_arr = q_tot_arr[1:,:]
     line_coordinates_arr = line_coordinates_arr[1:,:]
-
+    spacing  = 0.050
+    rivet_forces = q_tot_arr * spacing
     tau_xy_arr = q_tot_arr / par.t_sk
 
 
@@ -152,95 +153,153 @@ if solve:
 
 
 
+    for i in range(par.N):
+        location = i
+        plt.figure()
+        plt.plot(line_coordinates_arr[location,:], rivet_forces[location,:])
+        sigma_cr_skin = compute_buckling.compute_axial_buckling(4, 50 * 10e8, 0.33, par.t_sk, line_coordinates_arr[location, :])
+        sigma_yy_loc = sigma_yy_arr[location,:]
 
-    location = -1
-    sigma_cr_skin = compute_buckling.compute_axial_buckling(4, 50 * 10e8, 0.33, par.t_sk, line_coordinates_arr[location, :])
-    sigma_yy_loc = sigma_yy_arr[location,:]
-    start_buckling = 75
-    stop_buckling = 750
-    stiffeners_index = par.stiffeners_index
-    stiffeners_index = np.hstack([[75], stiffeners_index[:-1], [750, 1250], stiffeners_index[-1], [1925]])
-    sigma_cr_skin_loc = np.zeros(2 * mesh)
-    for index in range(stiffeners_index.shape[0]-1):
+        stiffeners_index = par.stiffeners_index
+        stiffeners_index = np.hstack([[0], stiffeners_index[:-2], [1000], stiffeners_index[-2:], [2000]])
+        sigma_cr_skin_loc = np.zeros(2 * mesh)
+        tau_cr_skin_loc = np.zeros(2 * mesh)
+        for index in range(stiffeners_index.shape[0]-1):
 
-        b = np.sum(mesh_len_arr[location,stiffeners_index[index]:stiffeners_index[index + 1]])
-        sigma_cr_skin_temp = compute_buckling.compute_axial_buckling(4, 50 * 10e8, 0.33, par.t_sk,b)
-        sigma_cr_skin_loc[stiffeners_index[index]:stiffeners_index[index + 1]] = sigma_cr_skin_temp
-
-
-
-
-
-    # sigma_cr_skin_temp = compute_buckling.compute_axial_buckling(4, 50 * 10e8, 0.33, par.t_sk, line_coord)
-
-
-    ############################################################################################################################################
-    ############################################################################################################################################
-    #### COMPUTE VON MISES STRESSES ####
-
-    ### for now we define some stresses to be zero, we will change this once we have values
-    sigma_yy_loc = sigma_yy_loc/10e5
-    sigma_excess = sigma_cr_skin_loc/10e5 + sigma_yy_loc
-    sigma_excess = np.ma.masked_where(sigma_excess > 10, sigma_excess)
-    sigma_xx_loc = sigma_yy_loc * 0
-    sigma_zz_loc = sigma_yy_loc * 0
-    tau_xy_loc = tau_xy_arr[location, :]/10e5
-    tau_yz_loc = sigma_yy_loc * 0
-    tau_zx_loc = sigma_yy_loc * 0
-    sigma_vm = np.sqrt(((sigma_yy_loc + sigma_xx_loc)**2 + (sigma_yy_loc - sigma_zz_loc)**2 + (sigma_zz_loc - sigma_xx_loc)**2) / 2 + 3 * (tau_xy_loc**2 + tau_yz_loc**2 + tau_zx_loc**2))
-    print('=========== STRUCTURAL ANALYSIS COMPUTATIONS COMPLETED ===========')
-    if stiffeners:
-        print('********** STIFFENING MODE WAS ON **********')
-    ###time program execution
-    stop_timer = timeit.default_timer()
-    print('Runtime: ', round(stop_timer - start_timer, 3) * 1000, 'ms')
-    print('==================================================================')
-    ##############################################################################################################################################
-    #### PLOTTING STUFF
+            b = np.sum(mesh_len_arr[location,stiffeners_index[index]:stiffeners_index[index + 1]])
+            sigma_cr_skin_temp = compute_buckling.compute_axial_buckling(4, 50 * 10e8, 0.33, par.t_sk,b) / 1.5   #USE A SF OF 1.5
+            tau_cr_skin_temp = compute_buckling.compute_shear_buckling(5, 50 * 10e8, 0.33, par.t_sk, b) / 1.5
+            sigma_cr_skin_loc[stiffeners_index[index]:stiffeners_index[index + 1]] = sigma_cr_skin_temp
+            tau_cr_skin_loc[stiffeners_index[index]:stiffeners_index[index + 1]] = tau_cr_skin_temp
+            xc_loc = x_arr[location,stiffeners_index[index]] / c_lens[location]
+            print('Boom', index,'location is ', round(xc_loc,4), '% of chord')
+        del sigma_cr_skin_temp, tau_cr_skin_temp, index,xc_loc
 
 
 
-    x = x_arr[location,:]
-    y = z_arr[location,:]
-    # Create a set of line segments so that we can color them individually
-    # This creates the points as a N x 1 x 2 array so that we can stack points
-    # together easily to get the segments. The segments array for line collection
-    # needs to be (numlines) x (points per line) x 2 (for x and y)
-    points = np.array([x, y]).T.reshape(-1, 1, 2)
-    segments = np.concatenate([points[:-1], points[1:]], axis=1)
-    print('Plotting ...')
-    fig, axs = plt.subplots(1, 1)
-    ax = plt.gca()
-    # sets the ratio
-    ax.set_aspect(1)
-    # Create a continuous norm to map from data points to colors
-    # norm = plt.Normalize(sigma_yy_loc.min(), sigma_yy_loc.max())
-    norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
-    # norm = plt.Normalize(tau_xy_loc.min(), tau_xy_loc.max())
-    # norm = plt.Normalize(sigma_excess.min(), sigma_excess.max())
-    # lc = LineCollection(segments, cmap='RdYlBu', norm=norm)
-    lc = LineCollection(segments, cmap='RdYlBu_r', norm=norm)
-    # Set the values used for colormapping
-    # lc.set_array(sigma_yy_loc)
-    lc.set_array(sigma_vm)
-    # lc.set_array(sigma_excess)
-    # lc.set_array(tau_xy_loc)
-    lc.set_linewidth(4)
-    line = axs.add_collection(lc)
-    # fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_vm.min(), sigma_vm.max(), 16), 2))
-    fig.colorbar(line, ax=axs, label='$\sigma_{vm}$ [$MPa$]', orientation='horizontal')
-    plt.xlabel('x [$m$]')
-    plt.ylabel('z [$m$]')
-    plt.title('$\sigma_{yy}$ distribution along the airfoil, y = ' + str(y_pos[location]) + 'm')
-    plt.minorticks_on()
-    plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
-    plt.scatter(x_sc_arr[location], z_sc_arr[location], marker='*', label = 'Shear center')
-    plt.scatter(x_ac_arr[location], z_ac_arr[location], label = 'Aerodynamic center', marker='+')
-    plt.scatter(x_bar_arr[location], z_bar_arr[location], label = 'Centroid', marker='1')
-    plt.scatter(cs_areasloc_x_arr[location, :], cs_areasloc_z_arr[location,:], s = 800000 * cs_areas_size_arr[location,:])
-    axs.set_xlim(x.min() - 0.05, x.max() + 0.05)
-    axs.set_ylim(y.min() - 0.05, y.max() + 0.05)
-    plt.legend()
-    # plt.savefig('test.pdf')
+
+
+
+        # sigma_cr_skin_temp = compute_buckling.compute_axial_buckling(4, 50 * 10e8, 0.33, par.t_sk, line_coord)
+
+
+        ############################################################################################################################################
+        ############################################################################################################################################
+        #### COMPUTE VON MISES STRESSES ####
+
+        ### for now we define some stresses to be zero, we will change this once we have values
+        sigma_yy_loc = sigma_yy_loc/10e5
+        tau_xy_loc = tau_xy_arr[location, :] / 10e5
+        sigma_cr_skin_loc = sigma_cr_skin_loc/10e5
+        tau_cr_skin_loc = tau_cr_skin_loc/10e5
+        combined_buckling = - sigma_yy_loc/sigma_cr_skin_loc + (tau_xy_loc/tau_cr_skin_loc)**2
+        combined_buckling = np.ma.masked_where(sigma_yy_loc>0, combined_buckling)
+        combined_buckling = np.ma.masked_where(combined_buckling > 2, combined_buckling)
+        sigma_cr_skin_loc = np.ma.masked_where(sigma_cr_skin_loc > 15, sigma_cr_skin_loc)
+        sigma_excess = sigma_cr_skin_loc + sigma_yy_loc
+        sigma_excess = np.ma.masked_where(sigma_excess < 0, sigma_excess)
+        sigma_xx_loc = sigma_yy_loc * 0
+        sigma_zz_loc = sigma_yy_loc * 0
+
+        tau_yz_loc = sigma_yy_loc * 0
+        tau_zx_loc = sigma_yy_loc * 0
+        sigma_vm = np.sqrt(((sigma_yy_loc + sigma_xx_loc)**2 + (sigma_yy_loc - sigma_zz_loc)**2 + (sigma_zz_loc - sigma_xx_loc)**2) / 2 + 3 * (tau_xy_loc**2 + tau_yz_loc**2 + tau_zx_loc**2))
+        print('=========== STRUCTURAL ANALYSIS COMPUTATIONS COMPLETED ===========')
+        if stiffeners:
+            print('********** STIFFENING MODE WAS ON **********')
+        ###time program execution
+        stop_timer = timeit.default_timer()
+        print('Runtime: ', round(stop_timer - start_timer, 3) * 1000, 'ms')
+        print('==================================================================')
+        ##############################################################################################################################################
+        #### PLOTTING STUFF
+
+
+
+        x = x_arr[location,:]
+        y = z_arr[location,:]
+        # Create a set of line segments so that we can color them individually
+        # This creates the points as a N x 1 x 2 array so that we can stack points
+        # together easily to get the segments. The segments array for line collection
+        # needs to be (numlines) x (points per line) x 2 (for x and y)
+        points = np.array([x, y]).T.reshape(-1, 1, 2)
+        segments = np.concatenate([points[:-1], points[1:]], axis=1)
+        print('Plotting ...')
+        fig, axs = plt.subplots(1, 1)
+        ax = plt.gca()
+        # sets the ratio
+        ax.set_aspect(1)
+        # Create a continuous norm to map from data points to colors
+        # norm = plt.Normalize(sigma_yy_loc.min(), sigma_yy_loc.max())
+        # norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
+        # norm = plt.Normalize(tau_xy_loc.min(), tau_xy_loc.max())
+        norm = plt.Normalize(sigma_excess.min(), sigma_excess.max())
+        # norm = plt.Normalize(combined_buckling.min(), combined_buckling.max())
+        # norm = plt.Normalize(sigma_cr_skin_loc.min(), sigma_cr_skin_loc.max())
+        # lc = LineCollection(segments, cmap='RdYlBu', norm=norm)
+        lc = LineCollection(segments, cmap='RdYlBu_r', norm=norm)
+        # Set the values used for colormapping
+        # lc.set_array(sigma_yy_loc)
+        # lc.set_array(sigma_vm)
+        lc.set_array(sigma_excess)
+        # lc.set_array(tau_xy_loc)
+        # lc.set_array(sigma_cr_skin_loc)
+        # lc.set_array(combined_buckling)
+        lc.set_linewidth(2)
+        line = axs.add_collection(lc)
+        # fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_vm.min(), sigma_vm.max(), 16), 2))
+        fig.colorbar(line, ax=axs, label='$\sigma_{vm}$ [$MPa$]', orientation='horizontal')
+        # fig.colorbar(line, ax=axs, label='$\sigma_{vm}$ [$MPa$]', orientation='horizontal', ticks = np.round(np.linspace(0,2,20)))
+        plt.xlabel('x [$m$]')
+        plt.ylabel('z [$m$]')
+        plt.title('$\sigma_{yy}$ distribution along the airfoil, y = ' + str(round(y_pos[location],3)) + 'm')
+        plt.minorticks_on()
+        plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
+        plt.scatter(x_sc_arr[location], z_sc_arr[location], marker='*', label = 'Shear center')
+        plt.scatter(x_ac_arr[location], z_ac_arr[location], label = 'Aerodynamic center', marker='+')
+        plt.scatter(x_bar_arr[location], z_bar_arr[location], label = 'Centroid', marker='1')
+        plt.scatter(cs_areasloc_x_arr[location, :], cs_areasloc_z_arr[location,:], s = 1600000 * cs_areas_size_arr[location,:], color = 'k')
+        axs.set_xlim(x.min() - 0.05, x.max() + 0.05)
+        axs.set_ylim(y.min() - 0.05, y.max() + 0.05)
+        plt.legend()
+        # plt.savefig('test.pdf')
+
+        # plt.figure()
+        # fig, axs = plt.subplots(1, 1)
+        # ax = plt.gca()
+        # # sets the ratio
+        # ax.set_aspect(1)
+        # # Create a continuous norm to map from data points to colors
+        # norm = plt.Normalize(sigma_yy_loc.min(), sigma_yy_loc.max())
+        # # norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
+        # # norm = plt.Normalize(tau_xy_loc.min(), tau_xy_loc.max())
+        # # norm = plt.Normalize(sigma_excess.min(), sigma_excess.max())
+        # # norm = plt.Normalize(sigma_cr_skin_loc.min(), sigma_cr_skin_loc.max())
+        # # lc = LineCollection(segments, cmap='RdYlBu', norm=norm)
+        # lc = LineCollection(segments, cmap='RdYlBu_r', norm=norm)
+        # # Set the values used for colormapping
+        # lc.set_array(sigma_yy_loc)
+        # # lc.set_array(sigma_vm)
+        # # lc.set_array(sigma_excess)
+        # # lc.set_array(tau_xy_loc)
+        # # lc.set_array(sigma_cr_skin_loc)
+        # lc.set_linewidth(2)
+        # line = axs.add_collection(lc)
+        # # fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_vm.min(), sigma_vm.max(), 16), 2))
+        # fig.colorbar(line, ax=axs, label='$\sigma_{vm}$ [$MPa$]', orientation='horizontal')
+        # plt.xlabel('x [$m$]')
+        # plt.ylabel('z [$m$]')
+        # plt.title('$\sigma_{yy}$ distribution along the airfoil, y = ' + str(y_pos[location]) + 'm')
+        # plt.minorticks_on()
+        # plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
+        # plt.scatter(x_sc_arr[location], z_sc_arr[location], marker='*', label='Shear center')
+        # plt.scatter(x_ac_arr[location], z_ac_arr[location], label='Aerodynamic center', marker='+')
+        # plt.scatter(x_bar_arr[location], z_bar_arr[location], label='Centroid', marker='1')
+        # plt.scatter(cs_areasloc_x_arr[location, :], cs_areasloc_z_arr[location, :],
+        #             s=1600000 * cs_areas_size_arr[location, :])
+        # axs.set_xlim(x.min() - 0.05, x.max() + 0.05)
+        # axs.set_ylim(y.min() - 0.05, y.max() + 0.05)
+        # plt.legend()
+
     plt.show()
 
