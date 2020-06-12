@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
     # Aircraft symmetrical along longitudinal (x) - axis
 
-    # Forward spar location at 10% of the Chord
+    # Forward spar location at 20% of the Chord
     
     # Aft spar location at 65% of the chord
     
@@ -23,37 +23,62 @@ import matplotlib.pyplot as plt
     
     # Engines are placed symmetrically (laterally) at (b/2) 0.35 and (b/2)*0.7
 
-    # x_AC SEAD Torenbeek --> 25 & MAC complete wing lecture 4 BA = 6
+    # x_AC SEAD Torenbeek --> correction for AC ADSE and Paper
     
     # Payload placed on CG location
     
+    # wing laoding 130
     
+    # Aspect Ratio 6.8
 
-
+    # battery cg est: 0.1
+    
+    # parachute at 0.5
+    
+    # Fin cg at the 0.6
 #Constraints Input values
 
-wing_loading            = 128.5              #[N/m] from P&P stall
+wing_loading            = 130              #[N/m] from P&P stall
 span                    = 3                  #[m]
 tipover_angle           = 55                 #[deg]
 attachment_root_fin     = 0.15               #[m]
+cl_alpha_airfoil        = 0.11068*180/np.pi 
+alpha_zero_lift         = -0.0673
 
 #CG groups
+
+
+
+m_engine_inner = 0.3781               #[kg]
+m_engine_outer = 0.3781               #[kg]
+m_wing_struc   = 8                #[kg]
+
+m_engine_inner = 0.3781                #[kg]
+m_engine_outer = 0.3781                #[kg]
+m_wing_struc   = 7.5                   #[kg]
+m_contingency  = 0.5
+
+m_avpase       = 0.363              #[kg] Avionics, and Sensors
+m_parachute    = 0.5                #[kg] 
 
 m_engine_inner = 0.3781             #[kg]
 m_engine_outer = 0.3781             #[kg]
 m_wing_struc   = 8.0                #[kg]
 m_avpase       = 0.836              #[kg] Avionics, Parachute and Sensors
+
 m_battery      = 3.6                #[kg] Battery mass
 m_payload      = 3                  #[kg] Payload mass
 m_fin          = 0.5                #[kg]
 
-x_CG_battery   = 0.10                #[m]
-x_CG_avpase    = 0.5                #[m]
-gues_x_CG_fin  = 0.65               #[m]
+x_CG_contingency = 0.5
+x_CG_parachute = 0.5                #[kg]
+x_CG_battery   = 0.07              #[m]
+x_CG_avpase    = 0.35               #[m]
+gues_x_CG_fin  = 0.6               #[m]
 
 
-x_CG_without_wing_group = (x_CG_battery * m_battery + x_CG_avpase * m_avpase) / (m_battery+m_avpase)
-m_without_wing_group    = m_battery+m_avpase
+x_CG_without_wing_group = (x_CG_battery * m_battery + x_CG_avpase * m_avpase + x_CG_parachute * m_parachute + x_CG_contingency * m_contingency) / (m_battery+m_avpase+m_parachute+m_contingency)
+m_without_wing_group    = m_battery+m_avpase+m_parachute+m_contingency
 
 m_wing_group   = 2* m_engine_inner + 2 * m_engine_outer + m_wing_struc + m_fin
 
@@ -79,6 +104,7 @@ height_lidar  =0.061
 # Surface Area
 
 area = m_total *9.80665 / wing_loading
+AR = span**2/area
 
 #Bulge Front constraints
 
@@ -113,11 +139,15 @@ class Planform:
         self.c_MAC         = self.calc_c_MAC()
         self.y_MAC         = self.calc_y_MAC()
         self.sweep_LE      = self.calc_sweep_LE()
+        self.sweep_HC      = self.calc_sweep_HC()
         self.l             = self.calc_l()
         
         
         #target parameters
          
+        self.CLA                  = self.calc_CLA()
+        self.e                    = self.calc_e()
+        self.M                    = self.calc_M()
         self.x_NP                 = self.calc_x_NP()
         self.x_CG_wing_struc      = self.calc_x_CG_Wing_struc()
         self.x_CG_engines_outer   = self.calc_x_CG_engines_outer()
@@ -150,16 +180,39 @@ class Planform:
         sweep_LE = np.arctan(( self.span / 2 * np.tan(self.sweep) + 0.25 * self.c_root * ( 1 - self.taper))/( self.span / 2))
         return sweep_LE
     
+    def calc_sweep_HC(self):
+        sweep_HC = np.arctan((np.tan(self.sweep_LE)*(self.span/2)+0.5*self.c_tip-0.5*self.c_root)/( self.span / 2))
+        return sweep_HC
+    
+    def calc_CLA(self):
+        # assume beta = 1
+        a = 2*np.pi*AR
+        b = AR**2 / (cl_alpha_airfoil/(2*np.pi))**2
+        
+        CLA = a / (2 + (b*(1+np.tan(self.sweep_HC)**2)+4)**0.5)
+        #CLA = cl_alpha_airfoil / ( 1+cl_alpha_airfoil/(np.pi*AR*0.90))
+        
+        return CLA
+    
+    def calc_e(self):
+        R = 0.94 #assumed fixed (suction coefficient)
+        e = 1.1*(self.CLA/AR) / ((R*(self.CLA/AR))+(1-R)*np.pi)
+        return e
+    
     def calc_x_NP(self): # source: https://www.mh-aerotools.de/airfoils/flywing1.htm
         if self.taper > 0.375:
            x_NP = ( 0.25 * self.c_root) + ( 2 * self.span ) / ( 3 * np.pi) * np.tan(self.sweep)
         if self.taper < 0.375:
            x_NP =  0.25 * self.c_root + ( self.span * ( 1 + 2 * self.taper )) / (6 * ( 1 + self.taper )) * np.tan(self.sweep) 
+        correction = 0.05 #5-15% Reference 
+        x_NP = (1-correction)*x_NP
         return x_NP
     
     def calc_x_CG_Wing_struc(self):
         c_35 = 2 * self.area / ((1+self.taper) * self.span) * (1 - (1 - self.taper) / self.span * (2 * 0.35 * self.span / 2))
-        x_CG_wing_struc =  np.tan(self.sweep_LE) * (0.35 * self.span / 2) + (0.10 + 0.55 * 0.7) * c_35
+        x_CG_wing_struc =  np.tan(self.sweep_LE) * (0.35 * self.span / 2) + (0.20 + 0.45 * 0.7) * c_35
+        # x_CG_wing_struc = np.tan(self.sweep_LE)*0.4*self.span/2+c_35*0.4
+    
         return x_CG_wing_struc
     
     def calc_x_CG_engines_outer(self):
@@ -178,10 +231,12 @@ class Planform:
         
     def calc_x_CG(self):
         x_CG = (x_CG_without_wing_group * m_without_wing_group + self.x_CG_wing_group * m_wing_group) / (m_without_wing_group + m_wing_group + m_payload) 
+        correction = -0.1
+        x_CG = (1-correction)*x_CG
         return x_CG
     
     def calc_SM(self):
-        SM = ( self.x_NP - self.x_CG ) / self.c_MAC
+        SM = ( self.x_NP - self.x_CG ) / self.c_MAC 
         return SM
     
     def calc_l(self):
@@ -207,13 +262,30 @@ class Planform:
     def calc_x_CG_fin(self):
         a = 0.35 # input for centroid as function of total longitudinal length
         x_CG_fin = self.c_root - attachment_root_fin + self.c_root_fin * a
-        return x_CG_fin
+        return x_CG_fin  
     
+    def calc_M(self):
+        n    = 200 # amount of steps
+        a    = np.linspace(0,8,n)  #define expected linear part 0-8 degrees
+        CD_0 = 0.0097645# 0.00976475
+        M = np.zeros((n,4))
+        for i in range(0,n):
+            CL = self.CLA/180*np.pi * (a[i]-alpha_zero_lift)
+            CD = CD_0 + CL**2/(np.pi*AR*self.e)
+            M[i,0] = a[i]
+            M[i,1] = CL
+            M[i,2] = CD
+            M[i,3] = CL/CD
+            k = np.where(M[:,3]==M.max())
+            l = k[0]
+            m = l[0]
+            max_array = M[m]
+            CL_design = M[m,1]
+            CL_CD_max = M[m,3]
+        return M ,max_array,CL_design,CL_CD_max
     
-    
-    
-taperlist = np.arange(0.1,1,0.01)
-sweeplist = np.arange(0,25,0.1)   
+taperlist = np.arange(0.1,0.7,0.05)
+sweeplist = np.arange(10,25,0.1)   
 
 
 
@@ -223,33 +295,51 @@ ax = graphSM.add_subplot()
 #ax.xlabel('Taper Ratio [C_t/C_r]')
 #ax.ylabel('Sweep q(1/4) [deg]')
 ax.grid(True)
-ax.set_title('Sweep vs Taper for SM = 20 (red), 17.5 (blue), and 15 (black)')
+ax.set_title('Sweep vs taper sm = 0.03')
 
-options = []
+
+#for m in taperlist:
+#    for n in sweeplist:
+#        Data = Planform(area,span,m,n)
+#        CL = Data.M[2]
+#        print(Data.CLA)
+#        print(Data.e)
+#        ax.plot(n,CL,'ro', markersize=1)
+        
 
 for m in taperlist:
     for n in sweeplist:
         Data = Planform(area,span,m,n)
-        if Data.SM > 0.100 and Data.SM < 0.101:
-            ax.plot(m,n,'ro', markersize=1)
-            options.append([round(n,3),round(m,3)])
-            #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
-        if Data.SM > 0.175 and Data.SM < 0.176:
-            ax.plot(m,n,'bo', markersize=1)
-            #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
-        if Data.SM > 0.200 and Data.SM < 0.201:
-            ax.plot(m,n,'ko', markersize=1)
-            #print("For taper = " + str(round(m,3)) + " and for sweep = " +str(round(n,3)) + " degrees, SM = " + str(Data.SM))
+        if Data.SM < 0.0315 and Data.SM >0.0300:
+            plt.plot(m,n,'ro')
 
-#print(options)
-MinSweep = [min(idx) for idx in zip(*options)][0]
+    '''
+
+for m in taperlist:
+    Data = Planform(area,span,m,20)
+    CL = Data.M[2]
+    ax.plot(m,CL,'bo', markersize=1)
+for m in taperlist:
+    Data = Planform(area,span,m,15)
+    CL = Data.M[2]
+    ax.plot(m,CL,'yo', markersize=1)
+for m in taperlist:
+    Data = Planform(area,span,m,10)
+    CL = Data.M[2]
+    ax.plot(m,CL,'go', markersize=1)
+for m in taperlist:
+    Data = Planform(area,span,m,30)
+    CL = Data.M[2]
+    ax.plot(m,CL,'ko', markersize=1)
+
+'''
 
 ''' Draw Geometry (topview) '''
 
 # Inputs
 
-g = 0.35
-s = 20
+g = 0.4
+s = 16
 Data = Planform(area,span,g,s)
 
 print("Root chorr:", Data.c_root)
@@ -629,13 +719,13 @@ plt.plot(ellipse_data[10][1],ellipse_data[10][2])
 
 ### Semi-empirical twist estimation method
         
-CL_design = 0.4 #0.28-0.35
+#CL_design = 0.4 #0.28-0.35
 
-beta_required  = 19 *(CL_design/1)*(0.06/0.1)
-beta_cm        = 11 *(0.018/0.05)
-alpha_morphing = 0 #no airfoil morphing (aerodynamic twist)
+#beta_required  = 19 *(CL_design/1)*(0.06/0.1)
+#beta_cm        = 11 *(0.018/0.05)
+#alpha_morphing = 0 #no airfoil morphing (aerodynamic twist)
 
-beta = beta_required - beta_cm - alpha_morphing        
+#beta = beta_required - beta_cm - alpha_morphing        
 
 
 
