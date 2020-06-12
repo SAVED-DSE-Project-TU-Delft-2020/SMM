@@ -9,6 +9,7 @@ for the leading edge), as this may lead to errors when slicing
 from openpyxl import load_workbook
 import numpy as np
 import scipy.interpolate as sp_interpolate
+import functions as f
 def gatherpoints(mesh, debug):
     if debug:
         print('*************** DEBUG MODE IS ON ***************')
@@ -71,7 +72,7 @@ def gatherpoints(mesh, debug):
 
         airfoil_points_x = np.hstack([airfoil_points_x_temp, np.flip(airfoil_points_x_temp)])
         airfoil_points_z = np.hstack([airfoil_points_z_upper_temp, airfoil_points_z_lower_temp])
-
+        print(airfoil_points_z[airfoil_points_x == f.find_nearestval(airfoil_points_x, 0.15)])
     # plt.clf()
     # # plt.figure(figsize=(9, 5))
     # ax = plt.gca()

@@ -5,11 +5,15 @@ import scipy.integrate as sp_integrate
 import  scipy.interpolate as sp_interpolate
 import matplotlib.pyplot as plt
 import functions as f
-import sys
-np.set_printoptions(threshold=sys.maxsize)
-
-
+# import sys
+# np.set_printoptions(threshold=sys.maxsize)
+case = external_loads.case
+print('=========== GENERATING INTERNAL LOADS ===========')
+print('*********** Case is:', case, '***********')
 debug = False
+aileron = False
+
+
 
 y_mesh = np.linspace(par.b/2, par.PAY_WIDTH/2, par.N * par.segment_mesh)
 L_y = - sp_integrate.cumtrapz(external_loads.dL_dy_new(y_mesh), y_mesh, initial=0)       ### LIFT FORCE DISTRIBUTION (shear)
@@ -29,22 +33,28 @@ for i in indexes:
     Sz_array = np.append(Sz_array, S_y[i-1])
     Mx_array = np.append(Mx_array, Mx_y[i-1])
 
-print(Mx_y)
-print(y_mesh)
 ## change this later once we get the data
 D_y = L_y / par.L_D
-e1_index = f.find_nearest(y_mesh, par.b /2 - par.e1_loc)
-e2_index = f.find_nearest(y_mesh, par.b /2 - par.e2_loc)
-D_y[e1_index:] = D_y[e1_index:] - par.T1
-D_y[e2_index:] = D_y[e2_index:] - par.T2
-Mz_y = sp_integrate.cumtrapz(D_y, y_mesh, initial=0)
+Sx_y = D_y
+e1_index = f.find_nearest(y_mesh, par.e1_loc)
+e2_index = f.find_nearest(y_mesh, par.e2_loc)
+Sx_y[e1_index:] = Sx_y[e1_index:] - par.T1
+Sx_y[e2_index:] = Sx_y[e2_index:] - par.T2
+
+Mz_y = sp_integrate.cumtrapz(Sx_y, y_mesh, initial=0)
 Sx_array = np.array([])
 Mz_array = np.array([])
+Ty_array = np.array([])
+### torsion due to pitching moment/sweep/aileron
+if aileron:
+    Ty = external_loads.Ty_pitchingmoment
+else:
+    Ty = external_loads.Ty_pitchingmoment/10
 for i in indexes:
     i = int(i)
     Sx_array = np.append(Sx_array, D_y[i-1])
     Mz_array = np.append(Mz_array, Mz_y[i-1])
-
+    Ty_array = np.append(Ty_array, Ty[i-1])
 
 
 if debug:
@@ -54,7 +64,7 @@ if debug:
     plt.title('Spanwise bending moment distribution (half-wing)')
     plt.minorticks_on()
     plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.1)
-    plt.plot(y_mesh, Mz_y, label = 'Bending moment distribution')
+    plt.plot(np.linspace(0,1.5,10), Ty_array, label = 'Bending moment distribution')
     # plt.plot(y, dL_dy_new(y), label = 'Lift distribution')
     # plt.plot(y, w_final, label = 'Total distribution')
     # plt.legend(loc = 'upper right')

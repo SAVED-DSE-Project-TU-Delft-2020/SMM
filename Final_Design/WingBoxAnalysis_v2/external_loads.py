@@ -16,9 +16,11 @@ import functions as f
 import seaborn as sns
 sns.set()
 
-debug = True
+debug = False
+case = 'cruise'  ## 'cruise' OR 'handling' OR
 
 print('=========== GENERATING LOAD CASES ===========')
+print('*********** Case is:', case, '***********')
 ####################### GET LIFT DISTRIBUTION FROM DATA ############################
 wb = load_workbook(filename = r'lift_distr.xlsx')
 sheet = wb.worksheets[0]
@@ -37,8 +39,8 @@ for i in range(2, row_count+1):
 # y_locs = np.array([y_locs])[0][:35]
 # dL_dy = np.array([dL_dy])[0][:35]
 
-y_locs = np.hstack([[0], y_locs[:-1]])
-y_locs[-1] = 1.5
+# y_locs = np.hstack([[0], y_locs[:-1]])
+# y_locs[-1] = 1.5
 y_locs = np.flip(y_locs)
 dL_dy = np.hstack([[dL_dy[0]], dL_dy[:-1]])
 
@@ -66,8 +68,31 @@ w_mass_tot = np.hstack([center_load, wing_load])
 mass = np.trapz(w_mass_tot, y) * 2 / 9.81
 w_mass_tot = w_mass_tot * par.MTOM / mass
 w_final = dL_dy_new(y) - w_mass_tot
+if case == 'handling':
+    w_final = -w_mass_tot
 
 # debug = input("Do you want to plot external loads? (True or False)")
+### pitching moment
+wb = load_workbook(filename = r'Pitching_moment_cruise.xlsx')
+sheet = wb.worksheets[0]
+row_count = sheet.max_row                   #count number of rows
+y_locs_cm = []
+Cm_y = []
+for i in range(2, row_count+1):
+    locs_col = 'A'
+    cms_col  = 'B'
+    row_number = str(i)
+    point_y_locs = sheet[locs_col + row_number].value
+    point_Cm_y_loc = sheet[cms_col + row_number].value
+    y_locs_cm.append(point_y_locs)
+    Cm_y.append(point_Cm_y_loc)
+Cm_y = sp_interpolate.interp1d(y_locs_cm, Cm_y)
+Cm_y = Cm_y(y)
+chords = sp_interpolate.interp1d([0, 1.5], [par.c_r, par.c_t])
+
+d_Ty_pitchingmoment_dy = 0.5 * 1.225 * 22.5*22.5 * Ax * par.S * chords(y) * 0.25
+Ty_pitchingmoment = sp_integrate.cumtrapz(d_Ty_pitchingmoment_dy, y, initial=0)
+Ty_pitchingmoment = Ty_pitchingmoment - Ty_pitchingmoment[-1]
 
 
 
@@ -79,7 +104,7 @@ if debug:
     plt.minorticks_on()
     plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.1)
     # plt.plot(y, w_mass_tot, label = 'Weight distribution')
-    plt.plot(y, dL_dy_new(y), label = 'Lift distribution')
+    plt.plot(y, w_final, label = 'Lift distribution')
     # plt.plot(y, w_final, label = 'Total distribution')
     plt.legend(loc = 'upper right')
     plt.show()

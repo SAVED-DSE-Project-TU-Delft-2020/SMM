@@ -11,15 +11,17 @@ print('X-axis is pointing towards the TE and Z-axis is pointing up')
 print('The CS origin depends of the input data')
 ### import packages
 import numpy as np
-# import sys
-# np.set_printoptions(threshold=sys.maxsize)
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 import matplotlib.pyplot as plt
 from openpyxl import load_workbook
 import scipy.interpolate as sp_interpolate
+import scipy.integrate as sp_integrate
 import timeit
 from matplotlib.collections import LineCollection
 import seaborn as sns
 import compute_pureshear
+from mpl_toolkits.mplot3d import Axes3D
 sns.set()
 
 ### import files
@@ -38,7 +40,7 @@ import compute_buckling
 
 debug = False
 plotting = False
-showplot = False
+showplot = True
 save_csfig = False
 solve = True
 stiffeners = True
@@ -107,6 +109,16 @@ mesh_len_arr = mesh_len_arr[1:,:]
 mainspar_z_arr = mainspar_z_arr[1:,:]
 aftspar_z_arr = aftspar_z_arr[1:,:]
 
+A_enc = np.zeros(par.N)
+for i in range(par.N):
+    split_z_temp = np.split(cs_areasloc_z_arr[i,:], 2)
+    split_x_temp = np.split(cs_areasloc_x_arr[i,:], 2)
+    A_enc_top = sp_integrate.trapz(split_z_temp[0], split_x_temp[0])
+    A_enc_low = sp_integrate.trapz(split_z_temp[1], split_x_temp[1])
+    A_enc[i] = A_enc_low + A_enc_top
+del split_x_temp, split_z_temp, A_enc_low, A_enc_top
+
+
 x_ac_arr = np.zeros(0)
 z_ac_arr = np.zeros(0)
 for i in range(par.N):
@@ -121,7 +133,7 @@ if solve:
     Mz = internal_loads.Mz_array
     Sx = internal_loads.Sx_array
     Sz = internal_loads.Sz_array
-    ### missing torque due to pitching moment
+
 
 
     sigma_yy_arr = np.zeros(2 * mesh)
@@ -135,17 +147,21 @@ if solve:
         line_coordinates_arr = np.vstack((line_coordinates_arr, line_coordinates))
         q_pureshear_temp = compute_pureshear.compute_pureshearflow(Sx[i], Sz[i], Ixx_arr[i], Izz_arr[i], Izx_arr[i], cs_areas_size_arr[i,:],
                                                               cs_areasloc_x_arr[i,:], cs_areasloc_z_arr[i,:], x_bar_arr[i], z_bar_arr[i], line_coordinates, line_coordinates[-1])
-        q_shearoffset_temp = compute_pureshear.compute_torsion_sc_offset(Sx[i], Sz[i], x_sc_arr[i], z_sc_arr[i], x_ac_arr[i], z_ac_arr[i])
-        q_tot_temp = q_pureshear_temp + q_shearoffset_temp
+        T_shearoffset_temp = compute_pureshear.compute_torsion_sc_offset(Sx[i], Sz[i], x_sc_arr[i], z_sc_arr[i], x_ac_arr[i], z_ac_arr[i])
+        T_rest_temp = internal_loads.Ty[i]
+        T_tot_temp = T_rest_temp + T_shearoffset_temp
+        q_tors_temp = compute_pureshear.compute_sheartorsion(T_tot_temp, A_enc[i])
+        q_tot_temp = q_pureshear_temp + q_tors_temp
         q_tot_arr = np.vstack((q_tot_arr, q_tot_temp))
 
-    del sigma_yy_temp, q_tot_temp, q_shearoffset_temp, q_pureshear_temp, line_coordinates, i
+    del sigma_yy_temp, q_tot_temp, q_tors_temp, q_pureshear_temp, line_coordinates, i, T_shearoffset_temp, T_rest_temp
+    del T_tot_temp
     sigma_yy_arr = sigma_yy_arr[1:,:]
     q_tot_arr = q_tot_arr[1:,:]
     line_coordinates_arr = line_coordinates_arr[1:,:]
     spacing  = 0.050
     rivet_forces = q_tot_arr * spacing
-    tau_xy_arr = q_tot_arr / par.t_sk
+    tau_xy_arr = np.abs(q_tot_arr / par.t_sk)
 
 
 
@@ -153,10 +169,8 @@ if solve:
 
 
 
-    for i in range(par.N):
-        location = i
-        plt.figure()
-        plt.plot(line_coordinates_arr[location,:], rivet_forces[location,:])
+    for i in range(2):
+        location = -1
         sigma_cr_skin = compute_buckling.compute_axial_buckling(4, 50 * 10e8, 0.33, par.t_sk, line_coordinates_arr[location, :])
         sigma_yy_loc = sigma_yy_arr[location,:]
 
@@ -193,8 +207,9 @@ if solve:
         sigma_cr_skin_loc = sigma_cr_skin_loc/10e5
         tau_cr_skin_loc = tau_cr_skin_loc/10e5
         combined_buckling = - sigma_yy_loc/sigma_cr_skin_loc + (tau_xy_loc/tau_cr_skin_loc)**2
-        combined_buckling = np.ma.masked_where(sigma_yy_loc>0, combined_buckling)
-        combined_buckling = np.ma.masked_where(combined_buckling > 2, combined_buckling)
+        # combined_buckling = np.ma.masked_where(sigma_yy_loc>0, combined_buckling)
+        combined_buckling = np.ma.masked_where(combined_buckling > 1, combined_buckling)
+        combined_buckling = np.ma.masked_where(combined_buckling < 0, combined_buckling)
         sigma_cr_skin_loc = np.ma.masked_where(sigma_cr_skin_loc > 15, sigma_cr_skin_loc)
         sigma_excess = sigma_cr_skin_loc + sigma_yy_loc
         sigma_excess = np.ma.masked_where(sigma_excess < 0, sigma_excess)
@@ -213,6 +228,17 @@ if solve:
         print('==================================================================')
         ##############################################################################################################################################
         #### PLOTTING STUFF
+        # ax = plt.gca()
+        # ax.set_aspect(1)
+        # plt.minorticks_on()
+        # plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
+        # plt.xlabel('x [m]')
+        # plt.ylabel('y [m]')
+        # plt.scatter(cs_areasloc_x_arr[location, :], cs_areasloc_z_arr[location, :],
+        #             s=1600000 * cs_areas_size_arr[location, :], color='k', label = 'Boom')
+        # plt.legend()
+        # plt.savefig('booms.pdf')
+        # plt.show()
 
 
 
@@ -233,18 +259,18 @@ if solve:
         # norm = plt.Normalize(sigma_yy_loc.min(), sigma_yy_loc.max())
         # norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
         # norm = plt.Normalize(tau_xy_loc.min(), tau_xy_loc.max())
-        norm = plt.Normalize(sigma_excess.min(), sigma_excess.max())
-        # norm = plt.Normalize(combined_buckling.min(), combined_buckling.max())
+        # norm = plt.Normalize(sigma_excess.min(), sigma_excess.max())
+        norm = plt.Normalize(combined_buckling.min(), combined_buckling.max())
         # norm = plt.Normalize(sigma_cr_skin_loc.min(), sigma_cr_skin_loc.max())
         # lc = LineCollection(segments, cmap='RdYlBu', norm=norm)
         lc = LineCollection(segments, cmap='RdYlBu_r', norm=norm)
         # Set the values used for colormapping
         # lc.set_array(sigma_yy_loc)
         # lc.set_array(sigma_vm)
-        lc.set_array(sigma_excess)
+        # lc.set_array(sigma_excess)
         # lc.set_array(tau_xy_loc)
         # lc.set_array(sigma_cr_skin_loc)
-        # lc.set_array(combined_buckling)
+        lc.set_array(combined_buckling)
         lc.set_linewidth(2)
         line = axs.add_collection(lc)
         # fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_vm.min(), sigma_vm.max(), 16), 2))
@@ -301,5 +327,32 @@ if solve:
         # axs.set_ylim(y.min() - 0.05, y.max() + 0.05)
         # plt.legend()
 
-    plt.show()
 
+'''
+plot 3d
+'''
+# plt.clf()
+# X = np.ndarray.flatten(cs_areasloc_x_arr)
+# Z = np.ndarray.flatten(cs_areasloc_z_arr)
+# Y = np.zeros((par.N, 2*mesh))
+# y_temp = np.linspace(1.5, 0, par.N)
+# for i in range(par.N):
+#     y_loc_temp = y_temp[i]
+#     Y[i,:] = Y[i,:] + y_loc_temp
+# Y = np.ndarray.flatten(Y)
+# # print(Y)
+# # fig = plt.figure()
+# # ax = fig.add_subplot(111, projection='3d')
+# # ax.scatter(X, Y, Z)
+# #
+# # ax.set_xlabel('X Label')
+# # ax.set_ylabel('Y Label')
+# # ax.set_zlabel('Z Label')
+# #
+# # plt.show()
+# ax = plt.axes(projection='3d')
+# surf = ax.plot_trisurf(X, Y, Z, linewidth=0, antialiased=False)
+# ax.set_title('surface')
+# plt.show()
+
+plt.show()
