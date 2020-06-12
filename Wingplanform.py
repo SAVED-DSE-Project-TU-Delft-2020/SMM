@@ -47,18 +47,25 @@ alpha_zero_lift         = -0.0673
 
 #CG groups
 
-#<<<<<<< HEAD
+
+
 m_engine_inner = 0.3781               #[kg]
 m_engine_outer = 0.3781               #[kg]
 m_wing_struc   = 8                #[kg]
-#=======
+
 m_engine_inner = 0.3781                #[kg]
 m_engine_outer = 0.3781                #[kg]
 m_wing_struc   = 7.5                   #[kg]
 m_contingency  = 0.5
-#>>>>>>> 3ea594202613463d81207494353d7ad451ed11ab
+
 m_avpase       = 0.363              #[kg] Avionics, and Sensors
 m_parachute    = 0.5                #[kg] 
+
+m_engine_inner = 0.3781             #[kg]
+m_engine_outer = 0.3781             #[kg]
+m_wing_struc   = 8.0                #[kg]
+m_avpase       = 0.836              #[kg] Avionics, Parachute and Sensors
+
 m_battery      = 3.6                #[kg] Battery mass
 m_payload      = 3                  #[kg] Payload mass
 m_fin          = 0.5                #[kg]
@@ -260,7 +267,7 @@ class Planform:
     def calc_M(self):
         n    = 200 # amount of steps
         a    = np.linspace(0,8,n)  #define expected linear part 0-8 degrees
-        CD_0 = 0.0075# 0.00976475
+        CD_0 = 0.0097645# 0.00976475
         M = np.zeros((n,4))
         for i in range(0,n):
             CL = self.CLA/180*np.pi * (a[i]-alpha_zero_lift)
@@ -337,6 +344,7 @@ Data = Planform(area,span,g,s)
 
 print("Root chorr:", Data.c_root)
 print("Tip chord:", Data.c_tip)
+print("MAC:", Data.c_MAC)
 
 # Define points
 

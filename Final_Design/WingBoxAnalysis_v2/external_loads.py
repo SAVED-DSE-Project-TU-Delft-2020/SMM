@@ -5,6 +5,8 @@ the weight distribution is estimated in a similar fashion as in the midterm repo
 
 """
 import numpy as np
+# import sys
+# np.set_printoptions(threshold=sys.maxsize)
 from openpyxl import load_workbook
 import matplotlib.pyplot as plt
 import scipy.integrate as sp_integrate
@@ -14,16 +16,16 @@ import functions as f
 import seaborn as sns
 sns.set()
 
-debug = False
+debug = True
 
 print('=========== GENERATING LOAD CASES ===========')
 ####################### GET LIFT DISTRIBUTION FROM DATA ############################
-wb = load_workbook(filename = r'testdata.xlsx')
+wb = load_workbook(filename = r'lift_distr.xlsx')
 sheet = wb.worksheets[0]
 row_count = sheet.max_row                   #count number of rows
 y_locs = []
 dL_dy = []
-for i in range(2, row_count + 1):
+for i in range(2, row_count+1):
     locs_col = 'B'
     lift_col = 'C'
     row_number = str(i)
@@ -32,11 +34,14 @@ for i in range(2, row_count + 1):
     y_locs.append(point_y_locs)
     dL_dy.append(point_dL_dy_loc)
 ###### MODIFY THIS WHEN WE GET NEW DATA ######
-y_locs = np.array([y_locs])[0][:35]
-dL_dy = np.array([dL_dy])[0][:35]
+# y_locs = np.array([y_locs])[0][:35]
+# dL_dy = np.array([dL_dy])[0][:35]
 
-y_locs = np.hstack([[0], y_locs])
-dL_dy = np.hstack([[dL_dy[0]], dL_dy])
+y_locs = np.hstack([[0], y_locs[:-1]])
+y_locs[-1] = 1.5
+y_locs = np.flip(y_locs)
+dL_dy = np.hstack([[dL_dy[0]], dL_dy[:-1]])
+
 dL_dy_new = sp_interpolate.interp1d(y_locs, dL_dy)      ### INTERPOLATE SO WE CAN GET THE DATA WHERE WE WANT
 
 ################## COMPUTE DOWNWARDS LOADS DUE TO STRCTURAL WEIGHT #################################
@@ -62,7 +67,7 @@ mass = np.trapz(w_mass_tot, y) * 2 / 9.81
 w_mass_tot = w_mass_tot * par.MTOM / mass
 w_final = dL_dy_new(y) - w_mass_tot
 
-
+# debug = input("Do you want to plot external loads? (True or False)")
 
 
 
@@ -73,8 +78,8 @@ if debug:
     plt.title('Spanwise load distribution (half-wing)')
     plt.minorticks_on()
     plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.1)
-    plt.plot(y, w_mass_tot, label = 'Weight distribution')
+    # plt.plot(y, w_mass_tot, label = 'Weight distribution')
     plt.plot(y, dL_dy_new(y), label = 'Lift distribution')
-    plt.plot(y, w_final, label = 'Total distribution')
+    # plt.plot(y, w_final, label = 'Total distribution')
     plt.legend(loc = 'upper right')
     plt.show()
