@@ -169,7 +169,7 @@ if solve:
 
 
 
-    for i in range(2):
+    for i in range(1):
         location = -1
         sigma_cr_skin = compute_buckling.compute_axial_buckling(4, 50 * 10e8, 0.33, par.t_sk, line_coordinates_arr[location, :])
         sigma_yy_loc = sigma_yy_arr[location,:]
@@ -207,10 +207,10 @@ if solve:
         sigma_cr_skin_loc = sigma_cr_skin_loc/10e5
         tau_cr_skin_loc = tau_cr_skin_loc/10e5
         combined_buckling = - sigma_yy_loc/sigma_cr_skin_loc + (tau_xy_loc/tau_cr_skin_loc)**2
-        # combined_buckling = np.ma.masked_where(sigma_yy_loc>0, combined_buckling)
-        combined_buckling = np.ma.masked_where(combined_buckling > 1, combined_buckling)
-        combined_buckling = np.ma.masked_where(combined_buckling < 0, combined_buckling)
-        sigma_cr_skin_loc = np.ma.masked_where(sigma_cr_skin_loc > 15, sigma_cr_skin_loc)
+        combined_buckling = np.ma.masked_where(sigma_yy_loc>0, combined_buckling)
+        # combined_buckling = np.ma.masked_where(combined_buckling > 1, combined_buckling)
+        # combined_buckling = np.ma.masked_where(combined_buckling < 0, combined_buckling)
+        # sigma_cr_skin_loc = np.ma.masked_where(sigma_cr_skin_loc > 15, sigma_cr_skin_loc)
         sigma_excess = sigma_cr_skin_loc + sigma_yy_loc
         sigma_excess = np.ma.masked_where(sigma_excess < 0, sigma_excess)
         sigma_xx_loc = sigma_yy_loc * 0
@@ -251,10 +251,10 @@ if solve:
         points = np.array([x, y]).T.reshape(-1, 1, 2)
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
         print('Plotting ...')
-        fig, axs = plt.subplots(1, 1)
+        fig, axs = plt.subplots(1, 1, figsize= (15,5))
         ax = plt.gca()
         # sets the ratio
-        ax.set_aspect(1)
+        # ax.set_aspect(1)
         # Create a continuous norm to map from data points to colors
         # norm = plt.Normalize(sigma_yy_loc.min(), sigma_yy_loc.max())
         # norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
@@ -271,88 +271,25 @@ if solve:
         # lc.set_array(tau_xy_loc)
         # lc.set_array(sigma_cr_skin_loc)
         lc.set_array(combined_buckling)
-        lc.set_linewidth(2)
+        lc.set_linewidth(3)
         line = axs.add_collection(lc)
-        # fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_vm.min(), sigma_vm.max(), 16), 2))
-        fig.colorbar(line, ax=axs, label='$\sigma_{vm}$ [$MPa$]', orientation='horizontal')
+        # fig.colorbar(line, ax=axs, label = '$\sigma_{VM}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_vm.min(), sigma_vm.max(), 17), 2))
+        fig.colorbar(line, ax=axs, label = 'Interaction curves coefficient [-]', orientation = 'horizontal', ticks = np.round(np.linspace(0,1,17),3))
         # fig.colorbar(line, ax=axs, label='$\sigma_{vm}$ [$MPa$]', orientation='horizontal', ticks = np.round(np.linspace(0,2,20)))
         plt.xlabel('x [$m$]')
         plt.ylabel('z [$m$]')
-        plt.title('$\sigma_{yy}$ distribution along the airfoil, y = ' + str(round(y_pos[location],3)) + 'm')
+        plt.title('Interaction curves coefficient distribution along the airfoil [-], y = ' + str(round(y_pos[location],3)) + 'm')
         plt.minorticks_on()
         plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
         plt.scatter(x_sc_arr[location], z_sc_arr[location], marker='*', label = 'Shear center')
         plt.scatter(x_ac_arr[location], z_ac_arr[location], label = 'Aerodynamic center', marker='+')
         plt.scatter(x_bar_arr[location], z_bar_arr[location], label = 'Centroid', marker='1')
-        plt.scatter(cs_areasloc_x_arr[location, :], cs_areasloc_z_arr[location,:], s = 1600000 * cs_areas_size_arr[location,:], color = 'k')
+        plt.scatter(cs_areasloc_x_arr[location, :], cs_areasloc_z_arr[location,:], s = 1600000 * cs_areas_size_arr[location,:],
+                    color = 'k', label = 'Booms')
         axs.set_xlim(x.min() - 0.05, x.max() + 0.05)
         axs.set_ylim(y.min() - 0.05, y.max() + 0.05)
         plt.legend()
-        # plt.savefig('test.pdf')
+        plt.savefig('C:\\Users\\marco\\OneDrive\\Documents\\TU Delft\\BSc\\Year 3\\DSE\\Detailed Design\\Plots\\Stresses\\ICC_y=' + str(round(y_pos[location],3)) + '.pdf')
 
-        # plt.figure()
-        # fig, axs = plt.subplots(1, 1)
-        # ax = plt.gca()
-        # # sets the ratio
-        # ax.set_aspect(1)
-        # # Create a continuous norm to map from data points to colors
-        # norm = plt.Normalize(sigma_yy_loc.min(), sigma_yy_loc.max())
-        # # norm = plt.Normalize(sigma_vm.min(), sigma_vm.max())
-        # # norm = plt.Normalize(tau_xy_loc.min(), tau_xy_loc.max())
-        # # norm = plt.Normalize(sigma_excess.min(), sigma_excess.max())
-        # # norm = plt.Normalize(sigma_cr_skin_loc.min(), sigma_cr_skin_loc.max())
-        # # lc = LineCollection(segments, cmap='RdYlBu', norm=norm)
-        # lc = LineCollection(segments, cmap='RdYlBu_r', norm=norm)
-        # # Set the values used for colormapping
-        # lc.set_array(sigma_yy_loc)
-        # # lc.set_array(sigma_vm)
-        # # lc.set_array(sigma_excess)
-        # # lc.set_array(tau_xy_loc)
-        # # lc.set_array(sigma_cr_skin_loc)
-        # lc.set_linewidth(2)
-        # line = axs.add_collection(lc)
-        # # fig.colorbar(line, ax=axs, label = '$\sigma_{vm}$ [$MPa$]', orientation = 'horizontal', ticks = np.round(np.linspace(sigma_vm.min(), sigma_vm.max(), 16), 2))
-        # fig.colorbar(line, ax=axs, label='$\sigma_{vm}$ [$MPa$]', orientation='horizontal')
-        # plt.xlabel('x [$m$]')
-        # plt.ylabel('z [$m$]')
-        # plt.title('$\sigma_{yy}$ distribution along the airfoil, y = ' + str(y_pos[location]) + 'm')
-        # plt.minorticks_on()
-        # plt.grid(b=True, which='minor', color='#999999', linestyle='-', alpha=0.2)
-        # plt.scatter(x_sc_arr[location], z_sc_arr[location], marker='*', label='Shear center')
-        # plt.scatter(x_ac_arr[location], z_ac_arr[location], label='Aerodynamic center', marker='+')
-        # plt.scatter(x_bar_arr[location], z_bar_arr[location], label='Centroid', marker='1')
-        # plt.scatter(cs_areasloc_x_arr[location, :], cs_areasloc_z_arr[location, :],
-        #             s=1600000 * cs_areas_size_arr[location, :])
-        # axs.set_xlim(x.min() - 0.05, x.max() + 0.05)
-        # axs.set_ylim(y.min() - 0.05, y.max() + 0.05)
-        # plt.legend()
-
-
-'''
-plot 3d
-'''
-# plt.clf()
-# X = np.ndarray.flatten(cs_areasloc_x_arr)
-# Z = np.ndarray.flatten(cs_areasloc_z_arr)
-# Y = np.zeros((par.N, 2*mesh))
-# y_temp = np.linspace(1.5, 0, par.N)
-# for i in range(par.N):
-#     y_loc_temp = y_temp[i]
-#     Y[i,:] = Y[i,:] + y_loc_temp
-# Y = np.ndarray.flatten(Y)
-# # print(Y)
-# # fig = plt.figure()
-# # ax = fig.add_subplot(111, projection='3d')
-# # ax.scatter(X, Y, Z)
-# #
-# # ax.set_xlabel('X Label')
-# # ax.set_ylabel('Y Label')
-# # ax.set_zlabel('Z Label')
-# #
-# # plt.show()
-# ax = plt.axes(projection='3d')
-# surf = ax.plot_trisurf(X, Y, Z, linewidth=0, antialiased=False)
-# ax.set_title('surface')
-# plt.show()
 
 plt.show()
